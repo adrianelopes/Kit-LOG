@@ -5,7 +5,7 @@
 #include <ctime>
 #include <algorithm>
 #include "debug.h"
-#define NDEBUG
+// #define NDEBUG
 #include <cassert>
 
 using namespace std;
@@ -105,7 +105,6 @@ Solution Construcao(Data &data)
     }
 
     calcularValorObj(s, data);
-    s.sequence.pop_back();
     assert(verificaConstrucao(data, s));
     return s;
 }
@@ -114,7 +113,7 @@ bool Swap(Solution &s, Data &data)
 {
     double bestDelta = 0;
     int best_i, best_j;
-    double delta;
+    double delta = 0;
     int j, i;
 
     for (i = 1; i < s.sequence.size() - 1; i++)
@@ -152,6 +151,7 @@ bool Swap(Solution &s, Data &data)
     {
         swap(s.sequence[best_i], s.sequence[best_j]);
         s.valorobj = s.valorobj + bestDelta;
+        assert(verificaValorDelta(data, s, s.valorobj));
         return true;
     }
     else
@@ -164,7 +164,7 @@ bool twoOpt(Solution &s, Data &data)
 {
     double bestDelta = 0;
     int best_i, best_j, i, j;
-    double delta;
+    double delta = 0;
 
     for (i = 1; i < s.sequence.size() - 2; i++)
     {
@@ -198,6 +198,8 @@ bool twoOpt(Solution &s, Data &data)
     {
         reverse(s.sequence.begin() + best_i, s.sequence.begin() + best_j);
         s.valorobj = s.valorobj + bestDelta;
+        assert(verificaValorDelta(data, s, s.valorobj));
+
         return true;
     }
     else
@@ -209,7 +211,7 @@ bool twoOpt(Solution &s, Data &data)
 bool orOpt(Solution &s, Data &data, int n)
 {
     double bestDelta = 0;
-    double delta;
+    double delta = 0;
     int best_i, best_j, i, j;
     int last;
 
@@ -255,6 +257,7 @@ bool orOpt(Solution &s, Data &data, int n)
         {
             s.sequence = s.sequence;
             s.valorobj = s.valorobj;
+            assert(verificaValorDelta(data, s, s.valorobj));
             return false;
             cout << "false" << endl;
             getchar();
@@ -263,6 +266,7 @@ bool orOpt(Solution &s, Data &data, int n)
         {
             rotate(s.sequence.begin() + best_j, s.sequence.begin() + best_i, s.sequence.begin() + (best_i + n));
             s.valorobj = s.valorobj + bestDelta;
+            assert(verificaValorDelta(data, s, s.valorobj));
             cout << "rotate atras" << endl;
             return true;
             getchar();
@@ -271,6 +275,7 @@ bool orOpt(Solution &s, Data &data, int n)
         {
             rotate(s.sequence.begin() + best_i, s.sequence.begin() + best_i + (n - 1), s.sequence.begin() + best_j + 1);
             s.valorobj = s.valorobj + bestDelta;
+            assert(verificaValorDelta(data, s, s.valorobj));
             cout << "rotate frente" << endl;
             return true;
         }
@@ -295,27 +300,37 @@ int main(int argc, char **argv)
 
     while (k < 10)
     {
+        cout << k << endl;
+
         s = Construcao(data);
         cout << "Solução da Construção: " << endl;
         exibirSolucao(s);
+        cout << endl;
 
         Swap(s, data);
         cout << "Solução depois do Swap: " << endl;
         exibirSolucao(s);
+        cout << endl;
+
         twoOpt(s, data);
         cout << "Solução depois do 2OPT: " << endl;
         exibirSolucao(s);
-        orOpt(s, data, 1);
+        cout << endl;
+
         cout << "Solução depois do orOpt-1: " << endl;
+        orOpt(s, data, 1);
         exibirSolucao(s);
+        cout << endl;
 
-        orOpt(s, data, 2);
         cout << "Solução depois do orOpt-2: " << endl;
+        orOpt(s, data, 2);
         exibirSolucao(s);
+        cout << endl;
 
-        orOpt(s, data, 3);
         cout << "Solução depois do orOpt-3: " << endl;
+        orOpt(s, data, 3);
         exibirSolucao(s);
+        cout << endl;
 
         cout << endl;
 

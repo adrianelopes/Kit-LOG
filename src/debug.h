@@ -8,5 +8,6 @@ struct Solution
     double valorobj;
 };
 bool verificaConstrucao(Data &data, Solution &s);
+bool verificaValorDelta(Data &data, Solution &s, double delta);
 
 #endif

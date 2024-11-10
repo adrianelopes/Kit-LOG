@@ -47,3 +47,31 @@ bool verificaConstrucao(Data &data, Solution &s)
 
     return c1 == true && c2 == true && c3 == true;
 }
+
+bool verificaValorDelta(Data &data, Solution &s, double delta)
+{
+    double deltaTeste = 0;
+    double deltaAux = 0;
+
+    for (int i = 0; i < s.sequence.size() - 1; i++)
+    {
+        int vi = s.sequence[i];
+        int vj = s.sequence[i + 1];
+
+        deltaAux = data.getDistance(vi, vj);
+
+        deltaTeste = deltaAux + deltaTeste;
+    }
+
+    cout << "Delta: " << delta << endl;
+    cout << "DeltaTeste: " << deltaTeste << endl;
+
+    if (delta == deltaTeste)
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
