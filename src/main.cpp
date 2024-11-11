@@ -213,7 +213,7 @@ bool orOpt(Solution &s, Data &data, int n)
     double bestDelta = 0;
     double delta = 0;
     int best_i, best_j, i, j;
-    int last;
+    int last = 0;
 
     for (i = 1; i < s.sequence.size() - n; i++)
     {
@@ -222,6 +222,7 @@ bool orOpt(Solution &s, Data &data, int n)
         int vin = s.sequence[last + 1];
         int vip = s.sequence[i - 1];
         int vil = s.sequence[last];
+        int q = 1;
 
         for (j = 1; j < s.sequence.size() - 1; j++)
         {
@@ -229,14 +230,20 @@ bool orOpt(Solution &s, Data &data, int n)
             int vjp = s.sequence[j - 1];
             int vjn = s.sequence[j + 1];
 
-            if (j == i || j == last - 1 || j == last)
+            if (j == i || j == last - 1 || j == last || j == i + 1 || j == i - 1)
             {
                 continue;
             }
-            else
+
+            delta = -data.getDistance(vip, vi) - data.getDistance(vil, vin) - data.getDistance(vj, vjn) + data.getDistance(vip, vin) + data.getDistance(vj, vi) + data.getDistance(vil, vjn);
+
+            if (j == i - 1)
             {
-                delta = -data.getDistance(vip, vi) - data.getDistance(vil, vin) - data.getDistance(vj, vjn) + data.getDistance(vip, vin) + data.getDistance(vj, vi) + data.getDistance(vil, vjn);
+                delta += +data.getDistance(vj, vi);
             }
+            /* cout << "Interação :" << q << endl;
+            cout << "I: " << i << endl;
+            cout << "J: " << j << endl; */
 
             if (delta < bestDelta)
             {
@@ -247,25 +254,27 @@ bool orOpt(Solution &s, Data &data, int n)
         }
     }
 
-    if (delta < 0)
+    if (bestDelta < 0)
     {
 
         cout << "I: " << best_i << endl;
         cout << "J: " << best_j << endl;
 
-        if (best_j == best_i || best_j == best_i + (n - 2) || best_j == best_i + (n - 1))
+        if (best_j == best_i || best_j == (best_i + (n - 1) - 1) || best_j == best_i + (n - 1) || best_j == (best_i + 1))
         {
             s.sequence = s.sequence;
             s.valorobj = s.valorobj;
+            exibirSolucao(s);
             assert(verificaValorDelta(data, s, s.valorobj));
             return false;
             cout << "false" << endl;
             getchar();
         }
-        else if (best_j < best_i)
+        else if (best_j < best_i && best_j != (best_i - 1))
         {
-            rotate(s.sequence.begin() + best_j, s.sequence.begin() + best_i, s.sequence.begin() + (best_i + n));
+            rotate(s.sequence.begin() + best_j + 1, s.sequence.begin() + best_i, s.sequence.begin() + (best_i + n));
             s.valorobj = s.valorobj + bestDelta;
+            exibirSolucao(s);
             assert(verificaValorDelta(data, s, s.valorobj));
             cout << "rotate atras" << endl;
             return true;
@@ -273,8 +282,9 @@ bool orOpt(Solution &s, Data &data, int n)
         }
         else
         {
-            rotate(s.sequence.begin() + best_i, s.sequence.begin() + best_i + (n - 1), s.sequence.begin() + best_j + 1);
+            rotate(s.sequence.begin() + best_i, s.sequence.begin() + best_i + (n - 1) + 1, s.sequence.begin() + best_j + 1);
             s.valorobj = s.valorobj + bestDelta;
+            exibirSolucao(s);
             assert(verificaValorDelta(data, s, s.valorobj));
             cout << "rotate frente" << endl;
             return true;
@@ -297,6 +307,27 @@ int main(int argc, char **argv)
     int k = 0;
 
     Solution s;
+    int n = 3;
+
+    /*   vector<int> sequencia = {1, 2, 3, 4, 5, 6, 7};
+      int i = 4;
+      int j = 2;
+
+      for (k = 0; k < n; k++)
+      {
+          int vi = sequencia[i];
+          sequencia.erase(sequencia.begin() + i);
+          sequencia.insert(sequencia.begin() + j, vi);
+          i++;
+      }
+
+      for (int p = 0; p <= sequencia.size(); p++)
+      {
+          cout << sequencia[p] << " ";
+      } */
+
+    /*     sequencia.erase(sequencia.begin()+3);
+     */
 
     while (k < 10)
     {
@@ -307,7 +338,7 @@ int main(int argc, char **argv)
         exibirSolucao(s);
         cout << endl;
 
-        Swap(s, data);
+        /* Swap(s, data);
         cout << "Solução depois do Swap: " << endl;
         exibirSolucao(s);
         cout << endl;
@@ -315,7 +346,7 @@ int main(int argc, char **argv)
         twoOpt(s, data);
         cout << "Solução depois do 2OPT: " << endl;
         exibirSolucao(s);
-        cout << endl;
+        cout << endl; */
 
         cout << "Solução depois do orOpt-1: " << endl;
         orOpt(s, data, 1);
@@ -336,6 +367,7 @@ int main(int argc, char **argv)
 
         k++;
     }
+
     /* Solution s = Construcao(data);
     cout << "Solução da Construção: " << endl;
     exibirSolucao(s);

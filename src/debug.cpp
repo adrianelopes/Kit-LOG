@@ -75,3 +75,13 @@ bool verificaValorDelta(Data &data, Solution &s, double delta)
         return false;
     }
 }
+
+/* bool verificamovimento(Data &data, Solution *s, int j, int i, int n)
+{
+    int vi = 0;
+    if (n == 1)
+    {
+        vi = s->sequence[i];
+
+    }
+} */
