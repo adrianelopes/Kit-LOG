@@ -214,6 +214,9 @@ bool orOpt(Solution &s, Data &data, int n)
     double delta = 0;
     int best_i, best_j, i, j;
     int last = 0;
+    int q = 1;
+    cout << "Função que chega: ";
+    exibirSolucao(s);
 
     for (i = 1; i < s.sequence.size() - n; i++)
     {
@@ -222,7 +225,6 @@ bool orOpt(Solution &s, Data &data, int n)
         int vin = s.sequence[last + 1];
         int vip = s.sequence[i - 1];
         int vil = s.sequence[last];
-        int q = 1;
 
         for (j = 1; j < s.sequence.size() - 1; j++)
         {
@@ -235,15 +237,23 @@ bool orOpt(Solution &s, Data &data, int n)
                 continue;
             }
 
-            delta = -data.getDistance(vip, vi) - data.getDistance(vil, vin) - data.getDistance(vj, vjn) + data.getDistance(vip, vin) + data.getDistance(vj, vi) + data.getDistance(vil, vjn);
-
             if (j == i - 1)
             {
                 delta += +data.getDistance(vj, vi);
             }
-            /* cout << "Interação :" << q << endl;
+
+            else
+            {
+                delta = -data.getDistance(vip, vi) - data.getDistance(vil, vin) - data.getDistance(vj, vjn) + data.getDistance(vip, vin) + data.getDistance(vj, vi) + data.getDistance(vil, vjn);
+            }
+
+            cout << "Interação: " << q << endl;
             cout << "I: " << i << endl;
-            cout << "J: " << j << endl; */
+            cout << "J: " << j << endl;
+            assert(verificamovimento(data, s, j, i, n, delta));
+            cout << endl;
+            q++;
+            cout << endl;
 
             if (delta < bestDelta)
             {
@@ -253,6 +263,8 @@ bool orOpt(Solution &s, Data &data, int n)
             }
         }
     }
+
+    cout << "Terminando o movimento" << endl;
 
     if (bestDelta < 0)
     {
@@ -282,7 +294,7 @@ bool orOpt(Solution &s, Data &data, int n)
         }
         else
         {
-            rotate(s.sequence.begin() + best_i, s.sequence.begin() + best_i + (n - 1) + 1, s.sequence.begin() + best_j + 1);
+            rotate(s.sequence.begin() + best_i, s.sequence.begin() + best_i + n, s.sequence.begin() + best_j + 1);
             s.valorobj = s.valorobj + bestDelta;
             exibirSolucao(s);
             assert(verificaValorDelta(data, s, s.valorobj));
@@ -296,6 +308,10 @@ bool orOpt(Solution &s, Data &data, int n)
     }
 }
 
+Solution ILS()
+{
+}
+
 int main(int argc, char **argv)
 {
 
@@ -307,104 +323,66 @@ int main(int argc, char **argv)
     int k = 0;
 
     Solution s;
-    int n = 3;
 
-    /*   vector<int> sequencia = {1, 2, 3, 4, 5, 6, 7};
-      int i = 4;
-      int j = 2;
-
-      for (k = 0; k < n; k++)
+    /*   while (k < 1)
       {
-          int vi = sequencia[i];
-          sequencia.erase(sequencia.begin() + i);
-          sequencia.insert(sequencia.begin() + j, vi);
-          i++;
-      }
+          cout << k << endl;
 
-      for (int p = 0; p <= sequencia.size(); p++)
-      {
-          cout << sequencia[p] << " ";
-      } */
+          s = Construcao(data);
+          cout << "Solução da Construção: " << endl;
+          exibirSolucao(s);
+          cout << endl;
 
-    /*     sequencia.erase(sequencia.begin()+3);
-     */
+          Swap(s, data);
+          cout << "Solução depois do Swap: " << endl;
+          exibirSolucao(s);
+          cout << endl;
 
-    while (k < 10)
-    {
-        cout << k << endl;
+          twoOpt(s, data);
+          cout << "Solução depois do 2OPT: " << endl;
+          exibirSolucao(s);
+          cout << endl;
 
-        s = Construcao(data);
-        cout << "Solução da Construção: " << endl;
-        exibirSolucao(s);
-        cout << endl;
+          cout << "~~~~~~~~~~~~~~Solução depois do orOpt-1: ~~~~~~~~~~~~~~~~~~~" << endl;
+          orOpt(s, data, 1);
+          cout << endl;
+          cout << "Solução como está: ";
+          exibirSolucao(s);
+          cout << endl;
 
-        /* Swap(s, data);
-        cout << "Solução depois do Swap: " << endl;
-        exibirSolucao(s);
-        cout << endl;
+          cout << "~~~~~~~~~~~~~~Solução depois do orOpt-2: ~~~~~~~~~~~~~~~~~~~" << endl;
+          orOpt(s, data, 2);
+          cout << endl;
+          cout << "Solução como está: ";
+          exibirSolucao(s);
+          cout << endl;
 
-        twoOpt(s, data);
-        cout << "Solução depois do 2OPT: " << endl;
-        exibirSolucao(s);
-        cout << endl; */
+          cout << "~~~~~~~~~~~~~~Solução depois do orOpt-3: ~~~~~~~~~~~~~~~~~~~" << endl;
+          orOpt(s, data, 3);
+          cout << endl;
+          cout << "Solução como está: ";
+          exibirSolucao(s);
+          cout << endl;
 
-        cout << "Solução depois do orOpt-1: " << endl;
-        orOpt(s, data, 1);
-        exibirSolucao(s);
-        cout << endl;
+          cout << endl;
 
-        cout << "Solução depois do orOpt-2: " << endl;
-        orOpt(s, data, 2);
-        exibirSolucao(s);
-        cout << endl;
+          k++;
+      }; */
 
-        cout << "Solução depois do orOpt-3: " << endl;
-        orOpt(s, data, 3);
-        exibirSolucao(s);
-        cout << endl;
+    /*     cout << "Dimension: " << n << endl;
+         cout << "DistanceMatrix: " << endl;
+         data.printMatrixDist();
 
-        cout << endl;
-
-        k++;
-    }
-
-    /* Solution s = Construcao(data);
-    cout << "Solução da Construção: " << endl;
-    exibirSolucao(s);
-    // cout << verificaConstrucao(data, s) << endl;
-    Swap(s, data);
-    cout << "Solução depois do Swap: " << endl;
-    exibirSolucao(s);
-    twoOpt(s, data);
-    cout << "Solução depois do 2OPT: " << endl;
-    exibirSolucao(s);
-
-    orOpt(s, data, 1);
-    cout << "Solução depois do orOpt-1: " << endl;
-    exibirSolucao(s);
-
-    orOpt(s, data, 2);
-    cout << "Solução depois do orOpt-2: " << endl;
-    exibirSolucao(s);
-
-    orOpt(s, data, 3);
-    cout << "Solução depois do orOpt-3: " << endl;
-    exibirSolucao(s);
- */
-    /*  cout << "Dimension: " << n << endl;
-     cout << "DistanceMatrix: " << endl;
-     data.printMatrixDist();
-
-     cout << "Exemplo de Solucao s = ";
-     double cost = 0.0;
-     for (size_t i = 1; i < n; i++)
-     {
-         cout << i << " -> ";
-         cost += data.getDistance(i, i + 1);
-     }
-     cost += data.getDistance(n, 1);
-     cout << n << " -> " << 1 << endl;
-     cout << "Custo de S: " << cost << endl; */
+         cout << "Exemplo de Solucao s = ";
+         double cost = 0.0;
+         for (size_t i = 1; i < n; i++)
+         {
+             cout << i << " -> ";
+             cost += data.getDistance(i, i + 1);
+         }
+         cost += data.getDistance(n, 1);
+         cout << n << " -> " << 1 << endl;
+         cout << "Custo de S: " << cost << endl;  */
 
     return 0;
 }

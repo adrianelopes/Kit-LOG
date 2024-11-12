@@ -1,6 +1,7 @@
 #include "debug.h"
 #include "Data.h"
 #include <vector>
+#include <algorithm>
 
 bool verificaConstrucao(Data &data, Solution &s)
 {
@@ -76,12 +77,50 @@ bool verificaValorDelta(Data &data, Solution &s, double delta)
     }
 }
 
-/* bool verificamovimento(Data &data, Solution *s, int j, int i, int n)
+bool verificamovimento(Data &data, Solution s, int j, int i, int n, double delta)
 {
     int vi = 0;
-    if (n == 1)
+    int k = 0;
+    double valor = s.valorobj + delta;
+    if (j < i)
     {
-        vi = s->sequence[i];
-
+        rotate(s.sequence.begin() + j + 1, s.sequence.begin() + i, s.sequence.begin() + (i + n));
     }
-} */
+    else
+    {
+        rotate(s.sequence.begin() + i, s.sequence.begin() + i + n, s.sequence.begin() + j + 1);
+    }
+
+    double Teste = 0;
+    double TesteAux = 0;
+
+    for (int i = 0; i < s.sequence.size() - 1; i++)
+    {
+        int vi = s.sequence[i];
+        int vj = s.sequence[i + 1];
+
+        TesteAux = data.getDistance(vi, vj);
+
+        Teste = TesteAux + Teste;
+    }
+
+    cout << "Sequência: ";
+    for (i = 0; i < s.sequence.size() - 1; i++)
+    {
+        cout << s.sequence[i] << " -> ";
+    }
+
+    cout << s.sequence.back();
+
+    cout << endl;
+    cout << "Valor desse movimento: " << Teste;
+
+    if (Teste == valor)
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
