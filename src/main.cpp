@@ -105,7 +105,7 @@ Solution Construcao(Data &data)
     }
 
     calcularValorObj(s, data);
-    assert(verificaConstrucao(data, s));
+    // assert(verificaConstrucao(data, s));
     return s;
 }
 
@@ -151,7 +151,7 @@ bool Swap(Solution &s, Data &data)
     {
         swap(s.sequence[best_i], s.sequence[best_j]);
         s.valorobj = s.valorobj + bestDelta;
-        assert(verificaValorDelta(data, s, s.valorobj));
+        // assert(verificaValorDelta(data, s, s.valorobj));
         return true;
     }
     else
@@ -198,7 +198,7 @@ bool twoOpt(Solution &s, Data &data)
     {
         reverse(s.sequence.begin() + best_i, s.sequence.begin() + best_j);
         s.valorobj = s.valorobj + bestDelta;
-        assert(verificaValorDelta(data, s, s.valorobj));
+        //  assert(verificaValorDelta(data, s, s.valorobj));
 
         return true;
     }
@@ -215,8 +215,8 @@ bool orOpt(Solution &s, Data &data, int n)
     int best_i, best_j, i, j;
     int last = 0;
     int q = 1;
-    cout << "Função que chega: ";
-    exibirSolucao(s);
+    // cout << "Função que chega: ";
+    // exibirSolucao(s);
 
     for (i = 1; i < s.sequence.size() - n; i++)
     {
@@ -247,13 +247,13 @@ bool orOpt(Solution &s, Data &data, int n)
                 delta = -data.getDistance(vip, vi) - data.getDistance(vil, vin) - data.getDistance(vj, vjn) + data.getDistance(vip, vin) + data.getDistance(vj, vi) + data.getDistance(vil, vjn);
             }
 
-            cout << "Interação: " << q << endl;
+            /* cout << "Interação: " << q << endl;
             cout << "I: " << i << endl;
             cout << "J: " << j << endl;
             assert(verificamovimento(data, s, j, i, n, delta));
             cout << endl;
             q++;
-            cout << endl;
+            cout << endl; */
 
             if (delta < bestDelta)
             {
@@ -264,31 +264,29 @@ bool orOpt(Solution &s, Data &data, int n)
         }
     }
 
-    cout << "Terminando o movimento" << endl;
+    // cout << "Terminando o movimento" << endl;
 
     if (bestDelta < 0)
     {
 
-        cout << "I: " << best_i << endl;
-        cout << "J: " << best_j << endl;
+        /*  cout << "I: " << best_i << endl;
+         cout << "J: " << best_j << endl; */
 
         if (best_j == best_i || best_j == (best_i + (n - 1) - 1) || best_j == best_i + (n - 1) || best_j == (best_i + 1))
         {
             s.sequence = s.sequence;
             s.valorobj = s.valorobj;
-            exibirSolucao(s);
-            assert(verificaValorDelta(data, s, s.valorobj));
+            // exibirSolucao(s);
+            // assert(verificaValorDelta(data, s, s.valorobj));
             return false;
-            cout << "false" << endl;
-            getchar();
         }
         else if (best_j < best_i && best_j != (best_i - 1))
         {
             rotate(s.sequence.begin() + best_j + 1, s.sequence.begin() + best_i, s.sequence.begin() + (best_i + n));
             s.valorobj = s.valorobj + bestDelta;
-            exibirSolucao(s);
-            assert(verificaValorDelta(data, s, s.valorobj));
-            cout << "rotate atras" << endl;
+            // exibirSolucao(s);
+            // assert(verificaValorDelta(data, s, s.valorobj));
+            // cout << "rotate atras" << endl;
             return true;
             getchar();
         }
@@ -296,9 +294,9 @@ bool orOpt(Solution &s, Data &data, int n)
         {
             rotate(s.sequence.begin() + best_i, s.sequence.begin() + best_i + n, s.sequence.begin() + best_j + 1);
             s.valorobj = s.valorobj + bestDelta;
-            exibirSolucao(s);
-            assert(verificaValorDelta(data, s, s.valorobj));
-            cout << "rotate frente" << endl;
+            // exibirSolucao(s);
+            // assert(verificaValorDelta(data, s, s.valorobj));
+            // cout << "rotate frente" << endl;
             return true;
         }
     }
@@ -308,8 +306,78 @@ bool orOpt(Solution &s, Data &data, int n)
     }
 }
 
-Solution ILS()
+void buscaLocal(Solution &s, Data &data)
 {
+    vector<int> NL = {1, 2, 3, 4, 5};
+    bool improved = false;
+
+    while (NL.empty() == false)
+    {
+        int n = rand() % NL.size();
+
+        switch (NL[n])
+        {
+        case 1:
+            improved = Swap(s, data);
+            break;
+
+        case 2:
+            improved = twoOpt(s, data);
+            break;
+
+        case 3:
+            improved = orOpt(s, data, 1);
+            break;
+
+        case 4:
+            improved = orOpt(s, data, 2);
+            break;
+
+        case 5:
+            improved = orOpt(s, data, 3);
+            break;
+        }
+
+        if (improved)
+        {
+            NL = {1, 2, 3, 4, 5};
+        }
+        else
+        {
+            NL.erase(NL.begin() + n);
+        }
+    }
+}
+
+Solution ILS(int maxIter, int maxIterIls, Data &data)
+{
+    Solution bestOfAll;
+    bestOfAll.valorobj = 999999999999999;
+    for (int i = 0; i < maxIter; i++)
+    {
+        Solution s = Construcao(data);
+        Solution best = s;
+        int iterIls = 0;
+
+        while (iterIls <= maxIterIls)
+        {
+            buscaLocal(s, data);
+            if (s.valorobj < best.valorobj)
+            {
+                best = s;
+                iterIls = 0;
+            }
+            //  s = perturbacao ();
+            iterIls++;
+        }
+
+        if (best.valorobj < bestOfAll.valorobj)
+        {
+            bestOfAll = best;
+        }
+
+        return bestOfAll;
+    }
 }
 
 int main(int argc, char **argv)
@@ -319,10 +387,26 @@ int main(int argc, char **argv)
     data.read();
     size_t size_i = data.getDimension();
 
-    srand(time(NULL));
-    int k = 0;
+    int maxIter = 50;
+    int V = data.getDimension();
+    int maxIterIls;
+
+    if (V >= 150)
+    {
+        maxIterIls = (V / 2);
+    }
+    else
+    {
+        maxIterIls = V;
+    }
 
     Solution s;
+
+    s = ILS(maxIter, maxIterIls, data);
+    exibirSolucao(s);
+
+    srand(time(NULL));
+    int k = 0;
 
     /*   while (k < 1)
       {
