@@ -2,6 +2,7 @@
 #include "Data.h"
 #include <vector>
 #include <algorithm>
+#include <cstdlib>
 
 bool verificaConstrucao(Data &data, Solution &s)
 {
@@ -114,6 +115,90 @@ bool verificamovimento(Data &data, Solution s, int j, int i, int n, double delta
 
     cout << endl;
     cout << "Valor desse movimento: " << Teste;
+
+    if (Teste == valor)
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+bool verificaSwap(Data &data, Solution s, int j, int i, double delta)
+{
+    int vi = 0;
+    int k = 0;
+    double valor = s.valorobj + delta;
+
+    double Teste = 0;
+    double TesteAux = 0;
+
+    swap(s.sequence[i], s.sequence[j]);
+    for (k = 0; k <= s.sequence.size() - 1; k++)
+    {
+        cout << s.sequence[k] << "->";
+    }
+
+    cout << endl;
+
+    for (int i = 0; i < s.sequence.size() - 1; i++)
+    {
+        int vi = s.sequence[i];
+        int vj = s.sequence[i + 1];
+
+        TesteAux = data.getDistance(vi, vj);
+
+        Teste = TesteAux + Teste;
+    }
+
+    cout << "Valor desse movimento: " << Teste;
+    cout << endl;
+    cout << endl;
+
+    if (Teste == valor)
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+bool verificaTwoopt(Data &data, Solution s, int i, int j, double delta)
+{
+    int vi = 0;
+    int k = 0;
+    cout << "I: " << i << endl;
+    cout << "J: " << j << endl;
+    double valor = s.valorobj + delta;
+
+    double Teste = 0;
+    double TesteAux = 0;
+
+    reverse(s.sequence.begin() + i, s.sequence.begin() + j + 1);
+
+    for (k = 0; k <= s.sequence.size() - 1; k++)
+    {
+        cout << s.sequence[k] << "->";
+    }
+
+    cout << endl;
+
+    for (int i = 0; i < s.sequence.size() - 1; i++)
+    {
+        int vi = s.sequence[i];
+        int vj = s.sequence[i + 1];
+
+        TesteAux = data.getDistance(vi, vj);
+
+        Teste = TesteAux + Teste;
+    }
+
+    cout << "Valor desse movimento: " << Teste;
+    cout << endl;
 
     if (Teste == valor)
     {
