@@ -7,7 +7,8 @@
 #include "debug.h"
 // #define NDEBUG
 #include <cassert>
-
+#include <chrono>
+using namespace chrono;
 using namespace std;
 
 struct InsertionInfo
@@ -336,7 +337,7 @@ void buscaLocal(Solution &s, Data &data)
     }
 }
 
-Solution perturbacao(Solution &s, Data &data)
+Solution perturbacao(Solution s, Data &data)
 {
 
     int sizi, sizj;
@@ -351,15 +352,11 @@ Solution perturbacao(Solution &s, Data &data)
         max = 2;
     }
     sizi = 2 + rand() % (max - 2 + 1);
-    // cout << "Tamanho do bloco I: " << sizi << endl;
     sizj = 2 + rand() % (max - 2 + 1);
-    // cout << "Tamanho do bloco J: " << sizj << endl;
     int maxPositionI = (s.sequence.size() - 1) - sizi;
     int maxPositionJ = (s.sequence.size() - 1) - sizj;
     int i = 1 + rand() % (maxPositionI);
-    // cout << "I: " << i << endl;
     int j = 1 + rand() % (maxPositionJ);
-    // cout << "J: " << j << endl;
 
     int k = 0;
     int auxi = i;
@@ -469,7 +466,7 @@ Solution ILS(int maxIter, int maxIterIls, Data &data)
                 best = s;
                 iterIls = 0;
             }
-            s = perturbacao(s, data);
+            s = perturbacao(best, data);
             iterIls++;
         }
 
@@ -483,6 +480,7 @@ Solution ILS(int maxIter, int maxIterIls, Data &data)
 
 int main(int argc, char **argv)
 {
+    srand(time(NULL));
 
     auto data = Data(argc, argv[1]);
     data.read();
@@ -503,10 +501,21 @@ int main(int argc, char **argv)
 
     Solution s;
 
-    s = ILS(maxIter, maxIterIls, data);
-    exibirSolucao(s);
+    auto inicio = high_resolution_clock::now();
+    double valor = 0;
 
-    srand(time(NULL));
+    for (int y = 0; y < 10; y++)
+    {
+        s = ILS(maxIter, maxIterIls, data);
+        valor = s.valorobj + valor;
+    }
+
+    auto fim = high_resolution_clock::now();
+
+    // Calcula a duração
+    auto tempo = duration_cast<microseconds>(fim - inicio);
+
+    cout << (valor / 10) << " " << (tempo.count() / 1e7) << endl;
 
     /*     cout << "Dimension: " << n << endl;
       cout << "DistanceMatrix: " << endl;
