@@ -351,15 +351,15 @@ Solution perturbacao(Solution &s, Data &data)
         max = 2;
     }
     sizi = 2 + rand() % (max - 2 + 1);
-    cout << "Tamanho do bloco I: " << sizi << endl;
+    // cout << "Tamanho do bloco I: " << sizi << endl;
     sizj = 2 + rand() % (max - 2 + 1);
-    cout << "Tamanho do bloco J: " << sizj << endl;
+    // cout << "Tamanho do bloco J: " << sizj << endl;
     int maxPositionI = (s.sequence.size() - 1) - sizi;
     int maxPositionJ = (s.sequence.size() - 1) - sizj;
     int i = 1 + rand() % (maxPositionI);
-    cout << "I: " << i << endl;
+    // cout << "I: " << i << endl;
     int j = 1 + rand() % (maxPositionJ);
-    cout << "J: " << j << endl;
+    // cout << "J: " << j << endl;
 
     int k = 0;
     int auxi = i;
@@ -392,7 +392,7 @@ Solution perturbacao(Solution &s, Data &data)
         if (teste)
         {
             j = 1 + rand() % (maxPositionJ);
-            cout << "Novo j: " << j << endl;
+            // cout << "Novo j: " << j << endl;
             auxi = i;
         }
 
@@ -402,12 +402,12 @@ Solution perturbacao(Solution &s, Data &data)
         }
     }
 
-    cout << "J depois da análise: " << j << endl;
+    // cout << "J depois da análise: " << j << endl;
 
     int lastI = i + (sizi - 1);
     int lastJ = j + (sizj - 1);
-    cout << "Último I: " << lastI << endl;
-    cout << "Último J: " << lastJ << endl;
+    /* cout << "Último I: " << lastI << endl;
+    cout << "Último J: " << lastJ << endl; */
     int menor, maior, lastMaior, lastMenor;
 
     if (j > i)
@@ -507,55 +507,7 @@ int main(int argc, char **argv)
     srand(time(NULL));
     int k = 0;
 
-    /*   while (k < 1)
-      {
-          cout << k << endl;
-
-          s = Construcao(data);
-          cout << "Solução da Construção: " << endl;
-          exibirSolucao(s);
-          cout << endl;
-
-          s = perturbacao(s, data);
-   */
-    /* cout << "~~~~~~~~~~~~~~SWAP~~~~~~~~~~~";
-    Swap(s, data);
-    cout << "Solução depois do Swap: " << endl;
-    exibirSolucao(s);
-    cout << endl;
-
-    twoOpt(s, data);
-    cout << "Solução depois do 2OPT: " << endl;
-    exibirSolucao(s);
-    cout << endl;
-
-    cout << "~~~~~~~~~~~~~~Solução depois do orOpt-1: ~~~~~~~~~~~~~~~~~~~" << endl;
-    orOpt(s, data, 1);
-    cout << endl;
-    cout << "Solução como está: ";
-    exibirSolucao(s);
-    cout << endl;
-
-    cout << "~~~~~~~~~~~~~~Solução depois do orOpt-2: ~~~~~~~~~~~~~~~~~~~" << endl;
-    orOpt(s, data, 2);
-    cout << endl;
-    cout << "Solução como está: ";
-    exibirSolucao(s);
-    cout << endl;
-
-    cout << "~~~~~~~~~~~~~~Solução depois do orOpt-3: ~~~~~~~~~~~~~~~~~~~" << endl;
-    orOpt(s, data, 3);
-    cout << endl;
-    cout << "Solução como está: ";
-    exibirSolucao(s);
-    cout << endl;
-
-    cout << endl;
-*/
-    /*      k++;
-     }; */
-
-    /*     cout << "Dimension: " << n << endl;
+       /*     cout << "Dimension: " << n << endl;
          cout << "DistanceMatrix: " << endl;
          data.printMatrixDist();
 
