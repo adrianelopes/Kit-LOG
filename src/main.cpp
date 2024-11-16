@@ -115,7 +115,6 @@ bool Swap(Solution &s, Data &data)
     int best_i, best_j;
     double delta = 0;
     int j, i;
-    int q = 1;
 
     for (i = 1; i < s.sequence.size() - 1; i++)
     {
@@ -139,9 +138,7 @@ bool Swap(Solution &s, Data &data)
                 delta = -data.getDistance(vip, vi) - data.getDistance(vi, vin) - data.getDistance(vjp, vj) - data.getDistance(vj, vjn) + data.getDistance(vip, vj) + data.getDistance(vj, vin) + data.getDistance(vjp, vi) + data.getDistance(vi, vjn);
             }
 
-            /*  cout << "Movimento: " << q << endl;
-             assert(verificaSwap(data, s, i, j, delta));
-             q++; */
+            // assert(verificaSwap(data, s, i, j, delta));
 
             if (delta < bestDelta)
             {
@@ -170,8 +167,6 @@ bool twoOpt(Solution &s, Data &data)
     double bestDelta = 0;
     int best_i, best_j, i, j;
     double delta = 0;
-    int q = 1;
-    bool teste = false;
 
     for (i = 1; i < s.sequence.size() - 2; i++)
     {
@@ -192,30 +187,21 @@ bool twoOpt(Solution &s, Data &data)
                 delta = -data.getDistance(vi, vip) - data.getDistance(vj, vjn) + data.getDistance(vip, vj) + data.getDistance(vi, vjn);
             }
 
-            /* cout << "Movimento: " << q << endl;
-            assert(verificaTwoopt(data, s, i, j, delta));
-            q++;
-            cout << "Delta calculado: " << delta << endl;
-            cout << "J atual: " << j << endl; */
+            // assert(verificaTwoopt(data, s, i, j, delta));
 
             if (delta < bestDelta)
             {
-                /*  teste = true;
-                 cout << "Teste: " << teste << endl; */
+
                 bestDelta = delta;
                 best_i = i;
                 best_j = j;
-                /*    cout << "Best i: " << best_i << endl;
-                   cout << "Best j: " << best_j << endl; */
             }
-            cout << endl;
         }
     }
 
     if (bestDelta < 0)
     {
-        /*  cout << "Best i: " << best_i << endl;
-         cout << "Best j: " << best_j << endl; */
+
         reverse(s.sequence.begin() + best_i, s.sequence.begin() + best_j + 1);
         s.valorobj = s.valorobj + bestDelta;
         // assert(verificaValorDelta(data, s, s.valorobj));
@@ -234,9 +220,6 @@ bool orOpt(Solution &s, Data &data, int n)
     double delta = 0;
     int best_i, best_j, i, j;
     int last = 0;
-    int q = 1;
-    // cout << "Função que chega: ";
-    // exibirSolucao(s);
 
     for (i = 1; i < s.sequence.size() - n; i++)
     {
@@ -267,13 +250,7 @@ bool orOpt(Solution &s, Data &data, int n)
                 delta = -data.getDistance(vip, vi) - data.getDistance(vil, vin) - data.getDistance(vj, vjn) + data.getDistance(vip, vin) + data.getDistance(vj, vi) + data.getDistance(vil, vjn);
             }
 
-            /* cout << "Interação: " << q << endl;
-            cout << "I: " << i << endl;
-            cout << "J: " << j << endl;
-            assert(verificamovimento(data, s, j, i, n, delta));
-            cout << endl;
-            q++;
-            cout << endl; */
+            // assert(verificamovimento(data, s, j, i, n, delta));
 
             if (delta < bestDelta)
             {
@@ -284,19 +261,13 @@ bool orOpt(Solution &s, Data &data, int n)
         }
     }
 
-    // cout << "Terminando o movimento" << endl;
-
     if (bestDelta < 0)
     {
-
-        /*  cout << "I: " << best_i << endl;
-         cout << "J: " << best_j << endl; */
 
         if (best_j == best_i || best_j == (best_i + (n - 1) - 1) || best_j == best_i + (n - 1) || best_j == (best_i + 1))
         {
             s.sequence = s.sequence;
             s.valorobj = s.valorobj;
-            // exibirSolucao(s);
             // assert(verificaValorDelta(data, s, s.valorobj));
             return false;
         }
@@ -304,9 +275,7 @@ bool orOpt(Solution &s, Data &data, int n)
         {
             rotate(s.sequence.begin() + best_j + 1, s.sequence.begin() + best_i, s.sequence.begin() + (best_i + n));
             s.valorobj = s.valorobj + bestDelta;
-            // exibirSolucao(s);
             // assert(verificaValorDelta(data, s, s.valorobj));
-            // cout << "rotate atras" << endl;
             return true;
             getchar();
         }
@@ -314,9 +283,7 @@ bool orOpt(Solution &s, Data &data, int n)
         {
             rotate(s.sequence.begin() + best_i, s.sequence.begin() + best_i + n, s.sequence.begin() + best_j + 1);
             s.valorobj = s.valorobj + bestDelta;
-            // exibirSolucao(s);
             // assert(verificaValorDelta(data, s, s.valorobj));
-            // cout << "rotate frente" << endl;
             return true;
         }
     }
@@ -369,6 +336,165 @@ void buscaLocal(Solution &s, Data &data)
     }
 }
 
+Solution perturbacao(Solution &s, Data &data)
+{
+
+    int sizi, sizj;
+    int V = data.getDimension();
+    int max = V / 10;
+    sizi = 2 + rand() % (max - 2 + 1);
+    cout << "Tamanho do bloco I: " << sizi << endl;
+    sizj = 2 + rand() % (max - 2 + 1);
+    cout << "Tamanho do bloco J: " << sizj << endl;
+    int maxPositionI = (s.sequence.size() - 1) - sizi;
+    int maxPositionJ = (s.sequence.size() - 1) - sizj;
+    int i = 1 + rand() % (maxPositionI);
+    cout << "I: " << i << endl;
+    int j = 1 + rand() % (maxPositionJ);
+    cout << "J: " << j << endl;
+
+    int k;
+    int auxi = i;
+    int auxj = j;
+
+    for (k = 0; k < sizj; k++)
+    {
+
+        auxi = i;
+
+        while (auxi < (i + sizi))
+        {
+            if (auxj == auxi)
+            {
+                j = 1 + rand() % (maxPositionJ);
+                auxi = i;
+                auxj = j;
+            }
+            else
+            {
+                auxi++;
+            }
+        }
+
+        auxj++;
+    }
+
+    cout << "J depois da análise: " << j << endl;
+
+    int lastI = i + (sizi - 1);
+    int lastJ = j + (sizj - 1);
+    cout << "Último I: " << lastI << endl;
+    cout << "Último J: " << lastJ << endl;
+    int menor, maior, lastMaior, lastMenor;
+
+    // Análise 1
+
+    if (j > i)
+    {
+        maior = j;
+        lastMaior = lastJ;
+        menor = i;
+        lastMenor = lastI;
+    }
+    else
+    {
+        maior = i;
+        lastMaior = lastI;
+        menor = j;
+        lastMenor = lastJ;
+    }
+
+    int n = 1;
+
+    cout << "Sequencia que chega: " << endl;
+    for (int l = 0; l < s.sequence.size() - 1; l++)
+    {
+        cout << s.sequence[l] << " -> ";
+    }
+    cout << s.sequence.back() << endl;
+
+    cout << "Primeira alteração: " << endl;
+
+    for (maior; maior <= lastMaior; maior++)
+    {
+
+        int vmaior = s.sequence[maior];
+        s.sequence.erase(s.sequence.begin() + maior);
+        s.sequence.insert(s.sequence.begin() + lastMenor + n, vmaior);
+        n++;
+    }
+
+    for (int l = 0; l < s.sequence.size() - 1; l++)
+    {
+        cout << s.sequence[l] << " -> ";
+    }
+    cout << s.sequence.back() << endl;
+
+    cout << "Segunda alteração: " << endl;
+
+    for (int p = menor; p <= lastMenor; p++)
+    {
+
+        int vmenor = s.sequence[menor];
+        s.sequence.erase(s.sequence.begin() + menor);
+        s.sequence.insert(s.sequence.begin() + lastMaior, vmenor);
+    }
+
+    for (int l = 0; l < s.sequence.size() - 1; l++)
+    {
+        cout << s.sequence[l] << " -> ";
+    }
+    cout << s.sequence.back() << endl;
+
+    // Análise 2
+
+    /* cout << "Sequencia que chega: " << endl;
+    for (int l = 0; l < s.sequence.size() - 1; l++)
+    {
+        cout << s.sequence[l] << " -> ";
+    }
+    cout << s.sequence.back() << endl;
+
+    for (j; j <= lastJ; j)
+    {
+        int vj = s.sequence[j];
+        s.sequence.erase(s.sequence.begin() + j);
+        s.sequence.insert(s.sequence.begin() + lastI, vj);
+    }
+
+    cout << "Alteração do J: " << endl;
+
+    for (int l = 0; l < s.sequence.size() - 1; l++)
+    {
+        cout << s.sequence[l] << " -> ";
+    }
+    cout << s.sequence.back() << endl;
+
+    cout << "Sequencia que chega: " << endl;
+    for (int l = 0; l < s.sequence.size() - 1; l++)
+    {
+        cout << s.sequence[l] << " -> ";
+    }
+    cout << s.sequence.back() << endl;
+
+    for (i; i <= lastI; i++)
+    {
+
+        int vi = s.sequence[i];
+        s.sequence.erase(s.sequence.begin() + i);
+        s.sequence.insert(s.sequence.begin() + lastJ, vi);
+    }
+    cout << "Alteração do I: " << endl;
+
+    for (int l = 0; l < s.sequence.size() - 1; l++)
+    {
+        cout << s.sequence[l] << " -> ";
+    }
+    cout << s.sequence.back() << endl; */
+
+    return s;
+}
+
 Solution ILS(int maxIter, int maxIterIls, Data &data)
 {
     Solution bestOfAll;
@@ -395,9 +521,8 @@ Solution ILS(int maxIter, int maxIterIls, Data &data)
         {
             bestOfAll = best;
         }
-
-        return bestOfAll;
     }
+    return bestOfAll;
 }
 
 int main(int argc, char **argv)
@@ -422,57 +547,59 @@ int main(int argc, char **argv)
 
     Solution s;
 
-    s = ILS(maxIter, maxIterIls, data);
-    exibirSolucao(s);
-
+    /*  s = ILS(maxIter, maxIterIls, data);
+     exibirSolucao(s);
+ */
     srand(time(NULL));
     int k = 0;
 
-    /*  while (k < 1)
-     {
-         cout << k << endl;
+    while (k < 1)
+    {
+        cout << k << endl;
 
-         s = Construcao(data);
-         cout << "Solução da Construção: " << endl;
-         exibirSolucao(s);
-         cout << endl;
+        s = Construcao(data);
+        cout << "Solução da Construção: " << endl;
+        exibirSolucao(s);
+        cout << endl;
 
-         /*  cout << "~~~~~~~~~~~~~~SWAP~~~~~~~~~~~";
-          Swap(s, data);
-          cout << "Solução depois do Swap: " << endl;
-          exibirSolucao(s);
-          cout << endl;
+        s = perturbacao(s, data);
 
-         twoOpt(s, data);
-         cout << "Solução depois do 2OPT: " << endl;
-         exibirSolucao(s);
-         cout << endl;
+        /* cout << "~~~~~~~~~~~~~~SWAP~~~~~~~~~~~";
+        Swap(s, data);
+        cout << "Solução depois do Swap: " << endl;
+        exibirSolucao(s);
+        cout << endl;
 
-                 cout << "~~~~~~~~~~~~~~Solução depois do orOpt-1: ~~~~~~~~~~~~~~~~~~~" << endl;
-                 orOpt(s, data, 1);
-                 cout << endl;
-                 cout << "Solução como está: ";
-                 exibirSolucao(s);
-                 cout << endl;
+        twoOpt(s, data);
+        cout << "Solução depois do 2OPT: " << endl;
+        exibirSolucao(s);
+        cout << endl;
 
-                 cout << "~~~~~~~~~~~~~~Solução depois do orOpt-2: ~~~~~~~~~~~~~~~~~~~" << endl;
-                 orOpt(s, data, 2);
-                 cout << endl;
-                 cout << "Solução como está: ";
-                 exibirSolucao(s);
-                 cout << endl;
+        cout << "~~~~~~~~~~~~~~Solução depois do orOpt-1: ~~~~~~~~~~~~~~~~~~~" << endl;
+        orOpt(s, data, 1);
+        cout << endl;
+        cout << "Solução como está: ";
+        exibirSolucao(s);
+        cout << endl;
 
-                 cout << "~~~~~~~~~~~~~~Solução depois do orOpt-3: ~~~~~~~~~~~~~~~~~~~" << endl;
-                 orOpt(s, data, 3);
-                 cout << endl;
-                 cout << "Solução como está: ";
-                 exibirSolucao(s);
-                 cout << endl;
+        cout << "~~~~~~~~~~~~~~Solução depois do orOpt-2: ~~~~~~~~~~~~~~~~~~~" << endl;
+        orOpt(s, data, 2);
+        cout << endl;
+        cout << "Solução como está: ";
+        exibirSolucao(s);
+        cout << endl;
 
-         cout << endl;
+        cout << "~~~~~~~~~~~~~~Solução depois do orOpt-3: ~~~~~~~~~~~~~~~~~~~" << endl;
+        orOpt(s, data, 3);
+        cout << endl;
+        cout << "Solução como está: ";
+        exibirSolucao(s);
+        cout << endl;
 
-         k++;
-     }; */
+        cout << endl;
+ */
+        k++;
+    };
 
     /*     cout << "Dimension: " << n << endl;
          cout << "DistanceMatrix: " << endl;
