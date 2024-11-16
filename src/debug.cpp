@@ -46,6 +46,7 @@ bool verificaConstrucao(Data &data, Solution &s)
         cout << c1 << endl;
         cout << c2 << endl;
         cout << c3 << endl; */
+    cout << "Ação bem sucedida" << endl;
 
     return c1 == true && c2 == true && c3 == true;
 }
