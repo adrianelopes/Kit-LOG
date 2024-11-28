@@ -2,6 +2,7 @@
 Resolvedor do TSP
 
 ./tsp instances/"name".tsp
+
 ./mlp instances/"name".mlp
 
 
