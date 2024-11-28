@@ -389,7 +389,6 @@ Solution perturbacao(Solution s, Data &data)
         if (teste)
         {
             j = 1 + rand() % (maxPositionJ);
-            // cout << "Novo j: " << j << endl;
             auxi = i;
         }
 
@@ -399,12 +398,9 @@ Solution perturbacao(Solution s, Data &data)
         }
     }
 
-    // cout << "J depois da análise: " << j << endl;
-
     int lastI = i + (sizi - 1);
     int lastJ = j + (sizj - 1);
-    /* cout << "Último I: " << lastI << endl;
-    cout << "Último J: " << lastJ << endl; */
+
     int menor, maior, lastMaior, lastMenor;
 
     if (j > i)
@@ -516,21 +512,6 @@ int main(int argc, char **argv)
     auto tempo = duration_cast<microseconds>(fim - inicio);
 
     cout << (valor / 10) << " " << (tempo.count() / 1e7) << endl;
-
-    /*     cout << "Dimension: " << n << endl;
-      cout << "DistanceMatrix: " << endl;
-      data.printMatrixDist();
-
-      cout << "Exemplo de Solucao s = ";
-      double cost = 0.0;
-      for (size_t i = 1; i < n; i++)
-      {
-          cout << i << " -> ";
-          cost += data.getDistance(i, i + 1);
-      }
-      cost += data.getDistance(n, 1);
-      cout << n << " -> " << 1 << endl;
-      cout << "Custo de S: " << cost << endl;  */
 
     return 0;
 }
