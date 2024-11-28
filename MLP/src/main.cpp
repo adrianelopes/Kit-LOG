@@ -11,10 +11,61 @@
 using namespace chrono;
 using namespace std;
 
+struct Subsequence
+{
+    double T, C;
+    int W;
+    int frist, last;
+    inline static Subsequence Concatenate(Subsequence &sigma_1,
+                                          Subsequence &sigma_2, Data &data)
+    {
+        Subsequence sigma;
+        double temp = data.getDistance(sigma_1.last, sigma_2.frist);
+        sigma.W = sigma_1.W + sigma_2.W;
+        sigma.T = sigma_1.T + temp + sigma_2.T;
+        sigma.C = sigma_1.C + sigma_2.W * (sigma_1.T + temp) + sigma_2.C;
+        sigma.frist = sigma_1.frist;
+        sigma.last = sigma_2.last;
+        return sigma;
+    }
+};
+
+void UpdateAllSubseq(Solution *s, vector<vector<Subsequence>> &subseq_matrix, Data &data)
+{
+    int n = s->sequence.size();
+
+    for (int i = 0; i < n; i++)
+    {
+        int v = s->sequence[i];
+        subseq_matrix[i][i].W = (i > 0);
+        subseq_matrix[i][i].C = 0;
+        subseq_matrix[i][i].T = 0;
+        subseq_matrix[i][i].frist = s->sequence[i];
+        subseq_matrix[i][i].last = s->sequence[i];
+    }
+
+    for (int i = 0; i < n; i++)
+    {
+        for (int j = i + 1; j < n; j++)
+        {
+            subseq_matrix[i][j] = Subsequence::Concatenate(subseq_matrix[i][j - 1], subseq_matrix[j][j], data);
+        }
+    }
+
+    for (int i = n - 1; i >= 0; i--)
+    {
+        for (int j = i - 1; j >= 0; j--)
+        {
+            subseq_matrix[i][j] = Subsequence::Concatenate(subseq_matrix[i][j + 1], subseq_matrix[j][j], data);
+        }
+    }
+
+    s->valorobj = subseq_matrix[0][n - 1].C;
+}
+
 struct InsertionInfo
 {
     int noInserido;
-    int arestaRemovida;
     double custo;
 };
 
@@ -27,51 +78,28 @@ void exibirSolucao(Solution &s)
     cout << "Custo da Solução: " << s.valorobj << endl;
 }
 
-void calcularValorObj(Solution &s, Data &data)
-{
-    s.valorobj = 0;
-    for (int i = 0; i < s.sequence.size() - 1; i++)
-        s.valorobj += data.getDistance(s.sequence[i], s.sequence[i + 1]);
-}
-
 vector<InsertionInfo> calcularCusto(Solution &s, vector<int> &CL, Data &data)
 {
-    // número de combinações possíveis
-    int n = ((s.sequence.size() - 1) * CL.size());
 
+    // número de combinações possíveis
+    int n = CL.size();
     vector<InsertionInfo> custoInsercao(n);
+
     int l = 0;
-    for (int a = 0; a < s.sequence.size() - 1; a++)
+    double aux = 0;
+    double acumulado = s.custoAcumulado;
+    auto position = 1;
+    int i = 0;
+
+    for (auto k : CL)
     {
-        int i = s.sequence[a];
-        int j = s.sequence[a + 1];
-        for (auto k : CL)
-        {
-            custoInsercao[l].custo = data.getDistance(i, k) + data.getDistance(k, j) - data.getDistance(i, j);
-            custoInsercao[l].arestaRemovida = a;
-            custoInsercao[l].noInserido = k;
-            l++;
-        }
+        i = s.sequence.back();
+        custoInsercao[l].noInserido = k;
+        custoInsercao[l].custo = data.getDistance(i, k);
+        l++;
     }
 
     return custoInsercao;
-}
-
-vector<int> escolher3NosAleatorios(Solution &s, vector<int> &CL)
-{
-
-    s.sequence = {1};
-    for (int n = 0; n < 3; n++)
-    {
-        int random = rand() % (CL.size());
-        int number = CL[random];
-        s.sequence.push_back(number);
-        CL.erase(CL.begin() + random);
-    }
-
-    s.sequence.push_back(1);
-
-    return s.sequence;
 }
 
 bool compararCusto(InsertionInfo &a, InsertionInfo &b)
@@ -91,22 +119,20 @@ Solution Construcao(Data &data)
         CL.push_back(a);
     }
 
-    s.sequence = escolher3NosAleatorios(s, CL);
+    s.sequence.push_back(1);
 
     while (!CL.empty())
     {
         vector<InsertionInfo> custoInsercao = calcularCusto(s, CL, data);
         sort(custoInsercao.begin(), custoInsercao.end(), compararCusto);
-        double alpha = (double)rand() / RAND_MAX;
+        double alpha = ((double)rand() / RAND_MAX) / 4;
         int selecionado = rand() % ((int)ceil(alpha * (custoInsercao.size())));
-        int position = custoInsercao[selecionado].arestaRemovida + 1;
         int inserir = custoInsercao[selecionado].noInserido;
-        s.sequence.insert(s.sequence.begin() + position, inserir);
+        s.sequence.push_back(inserir);
         CL.erase(remove(CL.begin(), CL.end(), inserir));
     }
-
-    calcularValorObj(s, data);
-    // assert(verificaConstrucao(data, s));
+    s.sequence.push_back(1);
+    assert(verificaConstrucao(data, s));
     return s;
 }
 
@@ -443,8 +469,6 @@ Solution perturbacao(Solution s, Data &data)
 
     // assert(verificaConstrucao(data, s));
 
-    calcularValorObj(s, data);
-
     return s;
 }
 
@@ -484,7 +508,7 @@ int main(int argc, char **argv)
 
     auto data = Data(argc, argv[1]);
     data.read();
-    size_t size_i = data.getDimension();
+    size_t n = data.getDimension();
 
     int maxIter = 50;
     int V = data.getDimension();
@@ -501,21 +525,26 @@ int main(int argc, char **argv)
 
     Solution s;
 
+    s = Construcao(data);
+    auto subseq_matrix = vector<vector<Subsequence>>(n + 1, vector<Subsequence>(n + 1));
+    UpdateAllSubseq(&s, subseq_matrix, data);
+
     auto inicio = high_resolution_clock::now();
     double valor = 0;
 
-    for (int y = 0; y < 10; y++)
+    /* for (int y = 0; y < 10; y++)
     {
         s = ILS(maxIter, maxIterIls, data);
         valor = s.valorobj + valor;
-    }
+    } */
 
     auto fim = high_resolution_clock::now();
 
     // Calcula a duração
     auto tempo = duration_cast<microseconds>(fim - inicio);
 
-    cout << (valor / 10) << " " << (tempo.count() / 1e7) << endl;
+    // cout << (valor / 10) << " " << (tempo.count() / 1e7) << endl;
+    exibirSolucao(s);
 
     /*     cout << "Dimension: " << n << endl;
       cout << "DistanceMatrix: " << endl;

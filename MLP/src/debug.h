@@ -6,6 +6,7 @@ struct Solution
 {
     vector<int> sequence;
     double valorobj;
+    double custoAcumulado;
 };
 bool verificaConstrucao(Data &data, Solution &s);
 bool verificaValorDelta(Data &data, Solution &s, double delta);
