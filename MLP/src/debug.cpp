@@ -43,10 +43,10 @@ bool verificaConstrucao(Data &data, Solution &s)
         }
     }
 
-    cout << "C1:" << c1 << endl;
-    cout << c2 << endl;
-    cout << c3 << endl;
-    cout << "Ação bem sucedida" << endl;
+    /*  cout << "C1:" << c1 << endl;
+     cout << c2 << endl;
+     cout << c3 << endl;
+     cout << "Ação bem sucedida" << endl; */
 
     return c1 == true && c2 == true && c3 == true;
 }
@@ -202,6 +202,38 @@ bool verificaTwoopt(Data &data, Solution s, int i, int j, double delta)
     cout << endl;
 
     if (Teste == valor)
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+bool verificaValorObj(Solution &s, Data &data)
+{
+    double aux = 0;
+    double cost = 0;
+    double acumulado = 0;
+    double antigo = 0;
+    int i = 0;
+    int j = 0;
+    int vi, vj;
+    for (i = 0; i < s.sequence.size() - 1; i++)
+    {
+        j = i + 1;
+        vi = s.sequence[i];
+        vj = s.sequence[j];
+        aux = data.getDistance(vi, vj);
+        antigo = cost;
+        cost = antigo + acumulado + aux;
+        acumulado = cost - antigo;
+    }
+
+    cout << "Cost: " << cost << endl;
+
+    if (cost == s.valorobj)
     {
         return true;
     }
