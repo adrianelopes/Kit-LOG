@@ -30,7 +30,7 @@ struct Subsequence
     }
 };
 
-void UpdateAllSubseq(Solution *s, vector<vector<Subsequence>> &subseq_matrix, Data &data)
+void UpdateAllSubseq(Solution *s, vector<vector<Subsequence>> &subseq_matrix, Data &data, int start = 0, int finish = 0)
 {
     int n = s->sequence.size();
 
@@ -238,42 +238,49 @@ bool twoOpt(Solution &s, Data &data, vector<vector<Subsequence>> &subseq_matrix)
     }
 }
 
-bool orOpt(Solution &s, Data &data, int n)
+bool orOpt(Solution &s, Data &data, vector<vector<Subsequence>> &subseq_matrix, int n)
 {
     double bestDelta = 0;
-    double delta = 0;
     int best_i, best_j, i, j;
-    int last = 0;
+    double delta = 0;
+    Subsequence sigma_1, sigma_2, sigma;
+    int x = n - 1;
+    bool verifica = false;
 
     for (i = 1; i < s.sequence.size() - n; i++)
     {
-        int vi = s.sequence[i];
-        last = i + (n - 1);
-        int vin = s.sequence[last + 1];
-        int vip = s.sequence[i - 1];
-        int vil = s.sequence[last];
-
         for (j = 1; j < s.sequence.size() - 1; j++)
         {
-            int vj = s.sequence[j];
-            int vjp = s.sequence[j - 1];
-            int vjn = s.sequence[j + 1];
 
-            if (j == i || j == last - 1 || j == last || j == i + 1 || j == i - 1)
+            for (int teste = i - 1; teste <= i + x + 1; teste++)
             {
+                if (j == teste)
+                {
+                    verifica = true;
+                }
+            }
+
+            if (verifica == true)
+            {
+                verifica = false;
                 continue;
             }
 
-            if (j == i - 1)
+            if (i < j)
             {
-                delta += +data.getDistance(vj, vi);
+                sigma_1 = Subsequence::Concatenate(subseq_matrix[0][i - 1], subseq_matrix[i + x + 1][j], data);
+                sigma_2 = Subsequence::Concatenate(sigma_1, subseq_matrix[i][i + x], data);
+                sigma = Subsequence::Concatenate(sigma_2, subseq_matrix[j + 1][n], data);
             }
 
-            else
+            else if (i > j)
             {
-                delta = -data.getDistance(vip, vi) - data.getDistance(vil, vin) - data.getDistance(vj, vjn) + data.getDistance(vip, vin) + data.getDistance(vj, vi) + data.getDistance(vil, vjn);
+                sigma_1 = Subsequence::Concatenate(subseq_matrix[0][j], subseq_matrix[i][i + x], data);
+                sigma_2 = Subsequence::Concatenate(sigma_1, subseq_matrix[j + 1][i - 1], data);
+                sigma = Subsequence::Concatenate(sigma_2, subseq_matrix[i + x + 1][n], data);
             }
 
+            double delta = sigma.C - s.valorobj;
             // assert(verificamovimento(data, s, j, i, n, delta));
 
             if (delta < bestDelta)
@@ -288,25 +295,20 @@ bool orOpt(Solution &s, Data &data, int n)
     if (bestDelta < 0)
     {
 
-        if (best_j == best_i || best_j == (best_i + (n - 1) - 1) || best_j == best_i + (n - 1) || best_j == (best_i + 1))
-        {
-            s.sequence = s.sequence;
-            s.valorobj = s.valorobj;
-            // assert(verificaValorDelta(data, s, s.valorobj));
-            return false;
-        }
-        else if (best_j < best_i && best_j != (best_i - 1))
+        cout << "best j: " << best_j << endl;
+        cout << "best i: " << best_i << endl;
+
+        if (best_j < best_i)
         {
             rotate(s.sequence.begin() + best_j + 1, s.sequence.begin() + best_i, s.sequence.begin() + (best_i + n));
-            s.valorobj = s.valorobj + bestDelta;
+            UpdateAllSubseq(&s, subseq_matrix, data);
             // assert(verificaValorDelta(data, s, s.valorobj));
             return true;
-            getchar();
         }
         else
         {
             rotate(s.sequence.begin() + best_i, s.sequence.begin() + best_i + n, s.sequence.begin() + best_j + 1);
-            s.valorobj = s.valorobj + bestDelta;
+            UpdateAllSubseq(&s, subseq_matrix, data);
             // assert(verificaValorDelta(data, s, s.valorobj));
             return true;
         }
@@ -522,22 +524,30 @@ int main(int argc, char **argv)
 
     Solution s;
 
-    while (true)
-    {
-        s = Construcao(data);
-        auto subseq_matrix = vector<vector<Subsequence>>(n + 1, vector<Subsequence>(n + 1));
-        UpdateAllSubseq(&s, subseq_matrix, data);
-        exibirSolucao(s);
-        assert(verificaValorObj(s, data));
-        Swap(s, data, subseq_matrix);
-        cout << "Solução depois do swap: " << endl;
-        exibirSolucao(s);
-        assert(verificaValorObj(s, data));
-        twoOpt(s, data, subseq_matrix);
-        cout << "Solução depois do 2-opt: " << endl;
-        exibirSolucao(s);
-        assert(verificaValorObj(s, data));
-    }
+    s = Construcao(data);
+    exibirSolucao(s);
+    cout << "or-opt-1: " << endl;
+    orOpt(s, data, 1);
+    exibirSolucao(s);
+    cout << "or-opt-2: " << endl;
+    orOpt(s, data, 2);
+    exibirSolucao(s);
+    cout << "or-opt-3: " << endl;
+    orOpt(s, data, 3);
+    exibirSolucao(s);
+
+    /*  auto subseq_matrix = vector<vector<Subsequence>>(n + 1, vector<Subsequence>(n + 1));
+     UpdateAllSubseq(&s, subseq_matrix, data);
+     exibirSolucao(s);
+     assert(verificaValorObj(s, data));
+     Swap(s, data, subseq_matrix);
+     cout << "Solução depois do swap: " << endl;
+     exibirSolucao(s);
+     assert(verificaValorObj(s, data));
+     twoOpt(s, data, subseq_matrix);
+     cout << "Solução depois do 2-opt: " << endl;
+     exibirSolucao(s);
+     assert(verificaValorObj(s, data)); */
 
     auto inicio = high_resolution_clock::now();
     double valor = 0;

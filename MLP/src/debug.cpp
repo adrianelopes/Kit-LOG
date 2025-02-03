@@ -211,6 +211,10 @@ bool verificaTwoopt(Data &data, Solution s, int i, int j, double delta)
     }
 }
 
+bool verificaOrOpt(Data &data, Solution s, int i, int j, double delta)
+{
+}
+
 bool verificaValorObj(Solution &s, Data &data)
 {
     double aux = 0;
