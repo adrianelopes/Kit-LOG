@@ -270,7 +270,6 @@ bool orOpt(Solution &s, Data &data, vector<vector<Subsequence>> &subseq_matrix, 
                 sigma_1 = Subsequence::Concatenate(subseq_matrix[0][i - 1], subseq_matrix[i + x + 1][j], data);
                 sigma_2 = Subsequence::Concatenate(sigma_1, subseq_matrix[i][i + x], data);
                 sigma = Subsequence::Concatenate(sigma_2, subseq_matrix[j + 1][n], data);
-                // assert(verificaOrOpt(data, s, i, j, n, delta));
             }
 
             else if (i > j)
@@ -278,10 +277,10 @@ bool orOpt(Solution &s, Data &data, vector<vector<Subsequence>> &subseq_matrix, 
                 sigma_1 = Subsequence::Concatenate(subseq_matrix[0][j], subseq_matrix[i][i + x], data);
                 sigma_2 = Subsequence::Concatenate(sigma_1, subseq_matrix[j + 1][i - 1], data);
                 sigma = Subsequence::Concatenate(sigma_2, subseq_matrix[i + x + 1][n], data);
-                // assert(verificaOrOpt(data, s, i, j, n, delta));
             }
 
             double delta = sigma.C - s.valorobj;
+
 
             if (delta < bestDelta)
             {
@@ -303,7 +302,6 @@ bool orOpt(Solution &s, Data &data, vector<vector<Subsequence>> &subseq_matrix, 
             rotate(s.sequence.begin() + best_j + 1, s.sequence.begin() + best_i, s.sequence.begin() + (best_i + n));
             UpdateAllSubseq(&s, subseq_matrix, data);
             exibirSolucao(s);
-            // assert(verificaValorDelta(data, s, s.valorobj));
             return true;
         }
         else
@@ -311,7 +309,6 @@ bool orOpt(Solution &s, Data &data, vector<vector<Subsequence>> &subseq_matrix, 
             rotate(s.sequence.begin() + best_i, s.sequence.begin() + best_i + n, s.sequence.begin() + best_j + 1);
             UpdateAllSubseq(&s, subseq_matrix, data);
             exibirSolucao(s);
-            // assert(verificaValorDelta(data, s, s.valorobj));
 
             return true;
         }
