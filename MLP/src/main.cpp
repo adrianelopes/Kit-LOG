@@ -75,7 +75,7 @@ void exibirSolucao(Solution &s)
     for (int i = 0; i < s.sequence.size() - 1; i++)
         std::cout << s.sequence[i] << " -> ";
     std::cout << s.sequence.back() << std::endl;
-    cout << "Custo da Solução: " << s.valorobj << endl;
+    // cout << "Custo da Solução: " << s.valorobj << endl;
 }
 
 vector<InsertionInfo> calcularCusto(Solution &s, vector<int> &CL, Data &data)
@@ -183,8 +183,7 @@ bool Swap(Solution &s, Data &data, vector<vector<Subsequence>> &subseq_matrix)
         cout << "Best j: " << best_j << endl;
         swap(s.sequence[best_i], s.sequence[best_j]);
         UpdateAllSubseq(&s, subseq_matrix, data);
-        // s.valorobj = s.valorobj + bestDelta;
-        //  assert(verificaValorDelta(data, s, s.valorobj));
+
         return true;
     }
     else
@@ -271,6 +270,7 @@ bool orOpt(Solution &s, Data &data, vector<vector<Subsequence>> &subseq_matrix, 
                 sigma_1 = Subsequence::Concatenate(subseq_matrix[0][i - 1], subseq_matrix[i + x + 1][j], data);
                 sigma_2 = Subsequence::Concatenate(sigma_1, subseq_matrix[i][i + x], data);
                 sigma = Subsequence::Concatenate(sigma_2, subseq_matrix[j + 1][n], data);
+                // assert(verificaOrOpt(data, s, i, j, n, delta));
             }
 
             else if (i > j)
@@ -278,10 +278,10 @@ bool orOpt(Solution &s, Data &data, vector<vector<Subsequence>> &subseq_matrix, 
                 sigma_1 = Subsequence::Concatenate(subseq_matrix[0][j], subseq_matrix[i][i + x], data);
                 sigma_2 = Subsequence::Concatenate(sigma_1, subseq_matrix[j + 1][i - 1], data);
                 sigma = Subsequence::Concatenate(sigma_2, subseq_matrix[i + x + 1][n], data);
+                // assert(verificaOrOpt(data, s, i, j, n, delta));
             }
 
             double delta = sigma.C - s.valorobj;
-            // assert(verificamovimento(data, s, j, i, n, delta));
 
             if (delta < bestDelta)
             {
@@ -302,6 +302,7 @@ bool orOpt(Solution &s, Data &data, vector<vector<Subsequence>> &subseq_matrix, 
         {
             rotate(s.sequence.begin() + best_j + 1, s.sequence.begin() + best_i, s.sequence.begin() + (best_i + n));
             UpdateAllSubseq(&s, subseq_matrix, data);
+            exibirSolucao(s);
             // assert(verificaValorDelta(data, s, s.valorobj));
             return true;
         }
@@ -309,7 +310,9 @@ bool orOpt(Solution &s, Data &data, vector<vector<Subsequence>> &subseq_matrix, 
         {
             rotate(s.sequence.begin() + best_i, s.sequence.begin() + best_i + n, s.sequence.begin() + best_j + 1);
             UpdateAllSubseq(&s, subseq_matrix, data);
+            exibirSolucao(s);
             // assert(verificaValorDelta(data, s, s.valorobj));
+
             return true;
         }
     }
@@ -319,7 +322,7 @@ bool orOpt(Solution &s, Data &data, vector<vector<Subsequence>> &subseq_matrix, 
     }
 }
 
-void buscaLocal(Solution &s, Data &data)
+void buscaLocal(Solution &s, Data &data, vector<vector<Subsequence>> &subseq_matrix)
 {
     vector<int> NL = {1, 2, 3, 4, 5};
     bool improved = false;
@@ -331,7 +334,7 @@ void buscaLocal(Solution &s, Data &data)
         switch (NL[n])
         {
         case 1:
-            // improved = Swap(s, data, sub);
+            // improved = Swap(s, data, subseq_matrix);
             break;
 
         case 2:
@@ -339,15 +342,15 @@ void buscaLocal(Solution &s, Data &data)
             break;
 
         case 3:
-            improved = orOpt(s, data, 1);
+            improved = orOpt(s, data, subseq_matrix, 1);
             break;
 
         case 4:
-            improved = orOpt(s, data, 2);
+            improved = orOpt(s, data, subseq_matrix, 2);
             break;
 
         case 5:
-            improved = orOpt(s, data, 3);
+            improved = orOpt(s, data, subseq_matrix, 3);
             break;
         }
 
@@ -471,7 +474,7 @@ Solution perturbacao(Solution s, Data &data)
     return s;
 }
 
-Solution ILS(int maxIter, int maxIterIls, Data &data)
+Solution ILS(int maxIter, int maxIterIls, Data &data, vector<vector<Subsequence>> &subseq_matrix)
 {
     Solution bestOfAll;
     bestOfAll.valorobj = 999999999999999;
@@ -483,7 +486,7 @@ Solution ILS(int maxIter, int maxIterIls, Data &data)
 
         while (iterIls <= maxIterIls)
         {
-            buscaLocal(s, data);
+            buscaLocal(s, data, subseq_matrix);
             if (s.valorobj < best.valorobj)
             {
                 best = s;
@@ -523,17 +526,17 @@ int main(int argc, char **argv)
     }
 
     Solution s;
-
+    auto subseq_matrix = vector<vector<Subsequence>>(n + 1, vector<Subsequence>(n + 1));
     s = Construcao(data);
     exibirSolucao(s);
     cout << "or-opt-1: " << endl;
-    orOpt(s, data, 1);
+    orOpt(s, data, subseq_matrix, 1);
     exibirSolucao(s);
     cout << "or-opt-2: " << endl;
-    orOpt(s, data, 2);
+    orOpt(s, data, subseq_matrix, 2);
     exibirSolucao(s);
     cout << "or-opt-3: " << endl;
-    orOpt(s, data, 3);
+    orOpt(s, data, subseq_matrix, 3);
     exibirSolucao(s);
 
     /*  auto subseq_matrix = vector<vector<Subsequence>>(n + 1, vector<Subsequence>(n + 1));
