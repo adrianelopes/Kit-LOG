@@ -20,6 +20,7 @@ struct Subsequence
                                           Subsequence &sigma_2, Data &data)
     {
         Subsequence sigma;
+
         double temp = data.getDistance(sigma_1.last, sigma_2.first);
         sigma.W = sigma_1.W + sigma_2.W;
         sigma.T = sigma_1.T + temp + sigma_2.T;
@@ -245,6 +246,7 @@ bool orOpt(Solution &s, Data &data, vector<vector<Subsequence>> &subseq_matrix, 
     Subsequence sigma_1, sigma_2, sigma;
     int x = n - 1;
     bool verifica = false;
+    int k = s.sequence.size() - 1;
 
     for (i = 2; i < s.sequence.size() - n; i++)
     {
@@ -259,26 +261,26 @@ bool orOpt(Solution &s, Data &data, vector<vector<Subsequence>> &subseq_matrix, 
                 if (j == teste)
                 {
                     verifica = true;
+                    break;
                 }
             }
 
             cout << "AAA4" << endl;
 
-
             if (verifica == true)
             {
                 verifica = false;
                 continue;
-            }                cout << "AAA5" << endl;
-
+            }
+            cout << "AAA5" << endl;
 
             if (i < j)
-            { 
+            {
 
                 cout << "Con" << endl;
                 sigma_1 = Subsequence::Concatenate(subseq_matrix[0][i - 1], subseq_matrix[i + x + 1][j], data);
                 sigma_2 = Subsequence::Concatenate(sigma_1, subseq_matrix[i][i + x], data);
-                sigma = Subsequence::Concatenate(sigma_2, subseq_matrix[j + 1][n], data);
+                sigma = Subsequence::Concatenate(sigma_2, subseq_matrix[j + 1][k], data);
             }
 
             else if (i > j)
@@ -286,12 +288,11 @@ bool orOpt(Solution &s, Data &data, vector<vector<Subsequence>> &subseq_matrix, 
                 cout << "Ca" << endl;
                 sigma_1 = Subsequence::Concatenate(subseq_matrix[0][j], subseq_matrix[i][i + x], data);
                 sigma_2 = Subsequence::Concatenate(sigma_1, subseq_matrix[j + 1][i - 1], data);
-                sigma = Subsequence::Concatenate(sigma_2, subseq_matrix[i + x + 1][n], data);
+                sigma = Subsequence::Concatenate(sigma_2, subseq_matrix[i + x + 1][k], data);
             }
 
             double delta = sigma.C - s.valorobj;
-            cout << "AAA6" << endl;
-
+            assert(verificaOrOpt(data, s, i, j, n, delta));
 
             if (delta < bestDelta)
             {
@@ -314,14 +315,14 @@ bool orOpt(Solution &s, Data &data, vector<vector<Subsequence>> &subseq_matrix, 
         {
             rotate(s.sequence.begin() + best_j + 1, s.sequence.begin() + best_i, s.sequence.begin() + (best_i + n));
             UpdateAllSubseq(&s, subseq_matrix, data);
-            exibirSolucao(s);
+            // assert(verificaValorDelta(data, s, s.valorobj));
             return true;
         }
         else
         {
             rotate(s.sequence.begin() + best_i, s.sequence.begin() + best_i + n, s.sequence.begin() + best_j + 1);
             UpdateAllSubseq(&s, subseq_matrix, data);
-            exibirSolucao(s);
+            // assert(verificaValorDelta(data, s, s.valorobj));
 
             return true;
         }
@@ -538,13 +539,14 @@ int main(int argc, char **argv)
     Solution s;
     auto subseq_matrix = vector<vector<Subsequence>>(n + 1, vector<Subsequence>(n + 1));
     s = Construcao(data);
+    UpdateAllSubseq(&s, subseq_matrix, data);
     exibirSolucao(s);
     cout << "or-opt-1: " << endl;
     orOpt(s, data, subseq_matrix, 1);
-    exibirSolucao(s); 
-     cout << "or-opt-2: " << endl;
+    exibirSolucao(s);
+    cout << "or-opt-2: " << endl;
     orOpt(s, data, subseq_matrix, 2);
-    exibirSolucao(s); 
+    exibirSolucao(s);
     cout << "or-opt-3: " << endl;
     orOpt(s, data, subseq_matrix, 3);
     exibirSolucao(s);

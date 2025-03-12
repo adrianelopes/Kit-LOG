@@ -215,7 +215,7 @@ bool verificaOrOpt(Data &data, Solution s, int i, int j, int n, double delta)
 {
     int vi = 0;
     int k = 0;
-    double valor = s.valorobj + delta;
+    s.valorobj += delta;
 
     double Teste = 0;
     double TesteAux = 0;
@@ -229,30 +229,7 @@ bool verificaOrOpt(Data &data, Solution s, int i, int j, int n, double delta)
         rotate(s.sequence.begin() + i, s.sequence.begin() + i + n, s.sequence.begin() + j + 1);
     }
 
-    cout << endl;
-
-    for (int i = 0; i < s.sequence.size() - 1; i++)
-    {
-        int vi = s.sequence[i];
-        int vj = s.sequence[i + 1];
-
-        TesteAux = data.getDistance(vi, vj);
-
-        Teste = TesteAux + Teste;
-    }
-
-    cout << "Valor desse movimento: " << Teste;
-    cout << endl;
-    cout << endl;
-
-    if (Teste == valor)
-    {
-        return true;
-    }
-    else
-    {
-        return false;
-    }
+    return verificaValorObj(s, data);
 }
 
 bool verificaValorObj(Solution &s, Data &data)
@@ -275,14 +252,5 @@ bool verificaValorObj(Solution &s, Data &data)
         acumulado = cost - antigo;
     }
 
-    cout << "Cost: " << cost << endl;
-
-    if (cost == s.valorobj)
-    {
-        return true;
-    }
-    else
-    {
-        return false;
-    }
+    return cost == s.valorobj;
 }
