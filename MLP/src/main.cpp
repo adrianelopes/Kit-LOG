@@ -445,12 +445,12 @@ int main(int argc, char **argv) {
   data.read();
   size_t n = data.getDimension();
 
-  int maxIter = 50;
+  int maxIter = 10;
   int V = data.getDimension();
   int maxIterIls;
 
-  if (V >= 150) {
-    maxIterIls = (V / 2);
+  if (V >= 100) {
+    maxIterIls = 100;
   } else {
     maxIterIls = V;
   }
