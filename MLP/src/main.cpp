@@ -47,7 +47,7 @@ void UpdateAllSubseq(Solution *s, vector<vector<Subsequence>> &subseq_matrix, Da
 
   for (int i = 0; i <= finish; i++)
   {
-    for (int j = max(i + 1, start); j <= n; j++)
+    for (int j = max(i + 1, start); j < n; j++)
     {
       subseq_matrix[i][j] = Subsequence::Concatenate(subseq_matrix[i][j - 1], subseq_matrix[j][j], data);
     }
@@ -55,7 +55,7 @@ void UpdateAllSubseq(Solution *s, vector<vector<Subsequence>> &subseq_matrix, Da
 
   for (int i = n - 1; i >= start; i--)
   {
-    for (int j = min(i + 1, finish); j >= 0; j--)
+    for (int j = min(i - 1, finish); j >= 0; j--)
     {
       subseq_matrix[i][j] = Subsequence::Concatenate(subseq_matrix[i][j + 1], subseq_matrix[j][j], data);
     }
@@ -165,7 +165,7 @@ bool Swap(Solution &s, Data &data, vector<vector<Subsequence>> &subseq_matrix)
         sigma = Subsequence::Concatenate(sigma_3, subseq_matrix[j + 1][n], data);
       }
 
-      // assert(verificaSwap(data, s, i, j, delta));
+      assert(verificaSwap(data, s, i, j, delta));
       double delta = sigma.C - s.valorobj;
 
       if (delta < bestDelta)
@@ -204,7 +204,7 @@ bool twoOpt(Solution &s, Data &data, vector<vector<Subsequence>> &subseq_matrix)
     {
       sigma_1 = Subsequence::Concatenate(subseq_matrix[0][i - 1], subseq_matrix[j][i], data);
       sigma = Subsequence::Concatenate(sigma_1, subseq_matrix[j + 1][n], data);
-      // assert(verificaTwoopt(data, s, i, j, delta));
+      assert(verificaTwoopt(data, s, i, j, delta));
 
       double delta = sigma.C - s.valorobj;
 
@@ -222,7 +222,6 @@ bool twoOpt(Solution &s, Data &data, vector<vector<Subsequence>> &subseq_matrix)
   {
     reverse(s.sequence.begin() + best_i, s.sequence.begin() + best_j + 1);
     UpdateAllSubseq(&s, subseq_matrix, data, best_i, best_j);
-    // assert(verificaValorDelta(data, s, s.valorobj));
 
     return true;
   }
@@ -292,7 +291,7 @@ bool orOpt(Solution &s, Data &data, vector<vector<Subsequence>> &subseq_matrix, 
     if (best_j < best_i)
     {
       rotate(s.sequence.begin() + best_j + 1, s.sequence.begin() + best_i, s.sequence.begin() + (best_i + n));
-      UpdateAllSubseq(&s, subseq_matrix, data, best_i, best_j);
+      UpdateAllSubseq(&s, subseq_matrix, data, best_j, best_i + n);
 
       return true;
     }
@@ -463,7 +462,7 @@ Solution ILS(int maxIter, int maxIterIls, Data &data, vector<vector<Subsequence>
   {
     Solution s = Construcao(data);
 
-    UpdateAllSubseq(&s, subseq_matrix, data, 0, sizeof(s.sequence) - 1);
+    UpdateAllSubseq(&s, subseq_matrix, data, 0, s.sequence.size() - 1);
     Solution best = s;
     int iterIls = 0;
 
@@ -477,7 +476,7 @@ Solution ILS(int maxIter, int maxIterIls, Data &data, vector<vector<Subsequence>
       }
       s = perturbacao(best, data);
 
-      UpdateAllSubseq(&s, subseq_matrix, data, 0, sizeof(s.sequence) - 1);
+      UpdateAllSubseq(&s, subseq_matrix, data, 0, s.sequence.size() - 1);
       iterIls++;
     }
 
