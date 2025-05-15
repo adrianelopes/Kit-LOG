@@ -10,14 +10,12 @@ struct Node
   vector<pair<int, int>> forbidden_arcs;
   vector<int> smallersubtour;
   double lower_bound; // custo total da solucao do algoritmo hungaro
-  int chosen;         // indice do menor subtour
   bool feasible;      // indica se a solucao do AP_TSP e viavel
 };
 
 vector<int> Subtour(hungarian_problem_t &p)
 {
   vector<int> smtour; // Menor subtour
-  vector<int> subtour;
   set<int> naoVisitados;
   int noAtual;
   int noStart;
@@ -30,6 +28,7 @@ vector<int> Subtour(hungarian_problem_t &p)
 
   while (!naoVisitados.empty())
   {
+    vector<int> subtour;
     noStart = *naoVisitados.begin();
     noAtual = noStart;
     subtour.push_back(noStart);
@@ -53,7 +52,12 @@ vector<int> Subtour(hungarian_problem_t &p)
         }
       }
     }
-
+    cout << "Subtour: " << endl;
+    for (int i = 0; i < subtour.size(); i++)
+    {
+      cout << subtour[i] << " -> ";
+    }
+    cout << endl;
     if (subtour.size() <= smtour.size())
     {
       smtour = subtour;
@@ -65,6 +69,24 @@ vector<int> Subtour(hungarian_problem_t &p)
 
 void updateNode(Node *node, Data *data, double **cost)
 {
+  for (int i = 0; i < data->getDimension(); i++)
+  {
+    for (int j = 0; j < data->getDimension(); j++)
+    {
+      if (i == j)
+      {
+        cost[i][j] = 9999999;
+      }
+      else
+      {
+        cost[i][j] = data->getDistance(i + 1, j + 1);
+      }
+    }
+  }
+
+  // for (auto aresta : node->forbidden_arcs){
+  //     cost[aresta.first][aresta.second] = 999999;
+  // }
   hungarian_problem_t p;
   int mode = HUNGARIAN_MODE_MINIMIZE_COST;
   hungarian_init(&p, cost, data->getDimension(), data->getDimension(),
@@ -72,12 +94,48 @@ void updateNode(Node *node, Data *data, double **cost)
   node->lower_bound = hungarian_solve(&p);
   node->smallersubtour = Subtour(p);                                        // detectar o conjunto de subtours
   node->feasible = node->smallersubtour.size() == data->getDimension() + 1; // verificar viabilidade
-
+  hungarian_print_assignment(&p);
   hungarian_free(&p);
 }
 
-void branch_and_bound()
+void printNo(Node *no)
 {
+
+  cout << "Menor subtour: " << endl;
+  for (int i = 0; i < no->smallersubtour.size(); i++)
+  {
+    cout << no->smallersubtour[i] << " -> ";
+  }
+  cout << endl;
+
+  cout << "Lower-Bound: " << no->lower_bound << endl;
+}
+
+void branch_and_bound(Data *data)
+{
+  double **cost = new double *[data->getDimension()];
+  for (int i = 0; i < data->getDimension(); i++)
+  {
+    cost[i] = new double[data->getDimension()];
+    for (int j = 0; j < data->getDimension(); j++)
+    {
+      if (i == j)
+      {
+        cost[i][j] = 9999999;
+      }
+      else
+      {
+        cost[i][j] = data->getDistance(i + 1, j + 1);
+      }
+    }
+  }
+  Node no;
+  updateNode(&no, data, cost);
+  printNo(&no);
+
+  for (int i = 0; i < data->getDimension(); i++)
+    delete[] cost[i];
+  delete[] cost;
 }
 
 int main(int argc, char **argv)
@@ -86,19 +144,8 @@ int main(int argc, char **argv)
   Data *data = new Data(argc, argv[1]);
   data->read();
 
-  double **cost = new double *[data->getDimension()];
-  for (int i = 0; i < data->getDimension(); i++)
-  {
-    cost[i] = new double[data->getDimension()];
-    for (int j = 0; j < data->getDimension(); j++)
-    {
-      cost[i][j] = data->getDistance(i, j);
-    }
-  }
+  branch_and_bound(data);
 
-  for (int i = 0; i < data->getDimension(); i++)
-    delete[] cost[i];
-  delete[] cost;
   delete data;
 
   return 0;
