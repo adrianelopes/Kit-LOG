@@ -109,11 +109,16 @@ void updateNode(Node *node, Data *data, double **cost)
   hungarian_free(&p);
 }
 
-void printNo(Node *no)
+void printNo(Node *no, int tamanhoArvore, int noAtual, double upper_bound)
 {
 
-  cout << "Menor subtour: " << endl;
-  for (int i = 0; i < no->smallersubtour.size(); i++)
+  int nosRestantes = tamanhoArvore - noAtual;
+
+  cout << noAtual << " " << nosRestantes << " " << tamanhoArvore << " " << no->lower_bound << " " << no->feasible << " " << upper_bound << endl;
+
+  // cout << "Menor subtour: " << endl;
+
+  /* for (int i = 0; i < no->smallersubtour.size(); i++)
   {
     cout << no->smallersubtour[i] << " -> ";
   }
@@ -122,11 +127,7 @@ void printNo(Node *no)
   for (auto aresta : no->forbidden_arcs)
   {
     cout << "Arco: " << aresta.first << " -> " << aresta.second << endl;
-  }
-
-  cout << "Lower-Bound: " << no->lower_bound << endl;
-
-  cout << "Viabilidade: " << no->feasible << endl;
+  } */
 }
 
 double branch_and_bound(Data *data, double upper_bound, int tipo)
@@ -147,6 +148,9 @@ double branch_and_bound(Data *data, double upper_bound, int tipo)
       }
     }
   }
+  int contadornos = 0;
+  int quant = 0;
+  int arvore = 0;
 
   Node root;
   updateNode(&root, data, cost);
@@ -155,11 +159,18 @@ double branch_and_bound(Data *data, double upper_bound, int tipo)
   {
     priority_queue<Node> tree;
     tree.push(root);
+    arvore++;
+    contadornos++;
+    quant++;
 
     while (!tree.empty())
     {
       Node node = tree.top();
       tree.pop();
+      contadornos++;
+      quant++;
+      arvore--;
+
       // Cortar os nós com valores piores que o upper_bound
       if (node.lower_bound > upper_bound)
       {
@@ -175,16 +186,19 @@ double branch_and_bound(Data *data, double upper_bound, int tipo)
         for (int i = 0; i < node.smallersubtour.size() - 1; i++)
         {
           Node son;
+          contadornos++;
+          quant++;
           son.forbidden_arcs = node.forbidden_arcs;
           pair<int, int> forbidden_arc = {
               node.smallersubtour[i],
               node.smallersubtour[i + 1]};
           son.forbidden_arcs.push_back(forbidden_arc);
           updateNode(&son, data, cost);
-          /* cout << "Pai: " << endl;
-          printNo(&node);
-          cout << "Filho: " << endl;
-          printNo(&son); */
+          if (contadornos >= 100)
+          {
+            printNo(&son, tree.size(), quant, upper_bound);
+            contadornos = 0;
+          }
           if (son.lower_bound < upper_bound)
           {
             tree.push(son);
@@ -262,6 +276,8 @@ int main(int argc, char **argv)
   data->read();
 
   int tipo = stoi(argv[2]);
+
+  cout << "NoAtual" << " " << "NosRestantes" << " " << "TamanhoArvore" << " " << "LowerBound" << " " << "Viabilidade" << " " << "UpperBound" << endl;
 
   if (argc == 4)
   {
