@@ -3,6 +3,10 @@
 #include <iostream>
 #include <vector>
 #include <set>
+#include <deque>
+#include <algorithm>
+#include <queue>
+
 using namespace std;
 
 struct Node
@@ -11,6 +15,11 @@ struct Node
   vector<int> smallersubtour;
   double lower_bound; // custo total da solucao do algoritmo hungaro
   bool feasible;      // indica se a solucao do AP_TSP e viavel
+
+  bool operator<(const Node &next) const
+  {
+    return lower_bound > next.lower_bound;
+  }
 };
 
 vector<int> Subtour(hungarian_problem_t &p)
@@ -23,7 +32,6 @@ vector<int> Subtour(hungarian_problem_t &p)
   for (int i = 0; i < (p.num_rows); i++)
   {
     naoVisitados.insert(i);
-    smtour.push_back(i);
   }
 
   while (!naoVisitados.empty())
@@ -52,13 +60,13 @@ vector<int> Subtour(hungarian_problem_t &p)
         }
       }
     }
-    cout << "Subtour: " << endl;
+    /* cout << "Subtour: " << endl;
     for (int i = 0; i < subtour.size(); i++)
     {
       cout << subtour[i] << " -> ";
     }
-    cout << endl;
-    if (subtour.size() <= smtour.size())
+    cout << endl; */
+    if ((subtour.size() < smtour.size()) || smtour.empty())
     {
       smtour = subtour;
     }
@@ -84,17 +92,20 @@ void updateNode(Node *node, Data *data, double **cost)
     }
   }
 
-  // for (auto aresta : node->forbidden_arcs){
-  //     cost[aresta.first][aresta.second] = 999999;
-  // }
+  for (auto aresta : node->forbidden_arcs)
+  {
+    cost[aresta.first][aresta.second] = 9999999;
+  }
   hungarian_problem_t p;
   int mode = HUNGARIAN_MODE_MINIMIZE_COST;
   hungarian_init(&p, cost, data->getDimension(), data->getDimension(),
                  mode); // Carregando o problema
+  // hungarian_print_costmatrix(&p);
   node->lower_bound = hungarian_solve(&p);
   node->smallersubtour = Subtour(p);                                        // detectar o conjunto de subtours
   node->feasible = node->smallersubtour.size() == data->getDimension() + 1; // verificar viabilidade
-  hungarian_print_assignment(&p);
+  // hungarian_print_assignment(&p);
+
   hungarian_free(&p);
 }
 
@@ -108,10 +119,17 @@ void printNo(Node *no)
   }
   cout << endl;
 
+  for (auto aresta : no->forbidden_arcs)
+  {
+    cout << "Arco: " << aresta.first << " -> " << aresta.second << endl;
+  }
+
   cout << "Lower-Bound: " << no->lower_bound << endl;
+
+  cout << "Viabilidade: " << no->feasible << endl;
 }
 
-void branch_and_bound(Data *data)
+double branch_and_bound(Data *data, double upper_bound, int tipo)
 {
   double **cost = new double *[data->getDimension()];
   for (int i = 0; i < data->getDimension(); i++)
@@ -129,13 +147,112 @@ void branch_and_bound(Data *data)
       }
     }
   }
-  Node no;
-  updateNode(&no, data, cost);
-  printNo(&no);
+
+  Node root;
+  updateNode(&root, data, cost);
+
+  if (tipo == 3)
+  {
+    priority_queue<Node> tree;
+    tree.push(root);
+
+    while (!tree.empty())
+    {
+      Node node = tree.top();
+      tree.pop();
+      // Cortar os nós com valores piores que o upper_bound
+      if (node.lower_bound > upper_bound)
+      {
+        continue;
+      }
+
+      if (node.feasible)
+      {
+        upper_bound = min(upper_bound, node.lower_bound);
+      }
+      else
+      {
+        for (int i = 0; i < node.smallersubtour.size() - 1; i++)
+        {
+          Node son;
+          son.forbidden_arcs = node.forbidden_arcs;
+          pair<int, int> forbidden_arc = {
+              node.smallersubtour[i],
+              node.smallersubtour[i + 1]};
+          son.forbidden_arcs.push_back(forbidden_arc);
+          updateNode(&son, data, cost);
+          /* cout << "Pai: " << endl;
+          printNo(&node);
+          cout << "Filho: " << endl;
+          printNo(&son); */
+          if (son.lower_bound < upper_bound)
+          {
+            tree.push(son);
+          }
+        }
+      }
+      // cout << "Tamamho da arvore: " << tree.size() << '\n';
+    }
+  }
+
+  else
+  {
+    deque<Node> tree;
+    tree.push_back(root);
+    Node node;
+
+    while (!tree.empty())
+    {
+      if (tipo == 1)
+      {
+        node = tree.back();
+        tree.pop_back();
+      }
+      else
+      {
+        node = tree.front();
+        tree.pop_front();
+      }
+
+      // Cortar os nós com valores piores que o upper_bound
+      if (node.lower_bound > upper_bound)
+      {
+        continue;
+      }
+
+      if (node.feasible)
+      {
+        upper_bound = min(upper_bound, node.lower_bound);
+      }
+      else
+      {
+        for (int i = 0; i < node.smallersubtour.size() - 1; i++)
+        {
+          Node son;
+          son.forbidden_arcs = node.forbidden_arcs;
+          pair<int, int> forbidden_arc = {
+              node.smallersubtour[i],
+              node.smallersubtour[i + 1]};
+          son.forbidden_arcs.push_back(forbidden_arc);
+          updateNode(&son, data, cost);
+          /* cout << "Pai: " << endl;
+          printNo(&node);
+          cout << "Filho: " << endl;
+          printNo(&son); */
+          if (son.lower_bound < upper_bound)
+          {
+            tree.push_back(son);
+          }
+        }
+      }
+      // cout << "Tamamho da arvore: " << tree.size() << '\n';
+    }
+  }
 
   for (int i = 0; i < data->getDimension(); i++)
     delete[] cost[i];
   delete[] cost;
+  return upper_bound;
 }
 
 int main(int argc, char **argv)
@@ -144,7 +261,16 @@ int main(int argc, char **argv)
   Data *data = new Data(argc, argv[1]);
   data->read();
 
-  branch_and_bound(data);
+  int tipo = stoi(argv[2]);
+
+  if (argc == 4)
+  {
+    cout << branch_and_bound(data, stod(argv[3]) + 1, tipo) << endl;
+  }
+  else
+  {
+    cout << branch_and_bound(data, 99999999, tipo) << endl;
+  }
 
   delete data;
 
