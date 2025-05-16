@@ -6,6 +6,7 @@
 #include <deque>
 #include <algorithm>
 #include <queue>
+#include <iomanip>
 
 using namespace std;
 
@@ -109,25 +110,17 @@ void updateNode(Node *node, Data *data, double **cost)
 	hungarian_free(&p);
 }
 
-void printNo(Node *no, int tamanhoArvore, int noAtual, double upper_bound)
+void printNo(long long nodeCount, long long left, long long treeSz, double bestInteger, double bestBound, long long iterCount, double gap)
 {
 
-	int nosRestantes = tamanhoArvore - noAtual;
-
-	cout << noAtual << " " << nosRestantes << " " << tamanhoArvore << " " << no->lower_bound << " " << no->feasible << " " << upper_bound << endl;
-
-	// cout << "Menor subtour: " << endl;
-
-	/* for (int i = 0; i < no->smallersubtour.size(); i++)
-	{
-	  cout << no->smallersubtour[i] << " -> ";
-	}
-	cout << endl;
-
-	for (auto aresta : no->forbidden_arcs)
-	{
-	  cout << "Arco: " << aresta.first << " -> " << aresta.second << endl;
-	} */
+	cout << setw(8) << nodeCount
+		 << setw(8) << left
+		 << setw(12) << treeSz
+		 << setw(14) << fixed << setprecision(2) << bestInteger
+		 << setw(14) << fixed << setprecision(2) << bestBound
+		 << setw(10) << iterCount
+		 << setw(10) << fixed << setprecision(2) << gap
+		 << "\n";
 }
 
 double branch_and_bound(Data *data, double upper_bound, int tipo)
@@ -148,28 +141,25 @@ double branch_and_bound(Data *data, double upper_bound, int tipo)
 			}
 		}
 	}
-	int contadornos = 0;
-	int quant = 0;
-	int arvore = 0;
 
 	Node root;
 	updateNode(&root, data, cost);
+	long long nodeCount = 0;			 // Nós processados
+	long long iterCount = 0;			 // Contador de cortes
+	double bestInteger = upper_bound;	 // Melhor solução inteira até agora
+	double bestBound = root.lower_bound; // Melhor limite inferior
 
 	if (tipo == 3)
 	{
 		priority_queue<Node> tree;
 		tree.push(root);
-		arvore++;
-		contadornos++;
-		quant++;
 
 		while (!tree.empty())
 		{
 			Node node = tree.top();
 			tree.pop();
-			contadornos++;
-			quant++;
-			arvore--;
+			nodeCount++;
+			iterCount++;
 
 			// Cortar os nós com valores piores que o upper_bound
 			if (node.lower_bound > upper_bound)
@@ -180,25 +170,36 @@ double branch_and_bound(Data *data, double upper_bound, int tipo)
 			if (node.feasible)
 			{
 				upper_bound = min(upper_bound, node.lower_bound);
+				// atualiza melhor inteiro
+				if (node.lower_bound < bestInteger)
+				{
+					bestInteger = node.lower_bound;
+				}
 			}
-			else
+
+			// atualiza melhor bound
+			bestBound = min(bestBound, node.lower_bound);
+
+			if (nodeCount % 100 == 0)
+			{
+				long long left = (long long)tree.size();
+				long long treeSz = (long long)tree.size();
+				double gap = (bestInteger > 0.0) ? 100.0 * (bestInteger - bestBound) / bestInteger : 0.0;
+				printNo(nodeCount, left, treeSz, bestInteger, bestBound, iterCount, gap);
+			}
+
+			if (!node.feasible)
 			{
 				for (int i = 0; i < node.smallersubtour.size() - 1; i++)
 				{
 					Node son;
-					contadornos++;
-					quant++;
+
 					son.forbidden_arcs = node.forbidden_arcs;
 					pair<int, int> forbidden_arc = {
 						node.smallersubtour[i],
 						node.smallersubtour[i + 1]};
 					son.forbidden_arcs.push_back(forbidden_arc);
 					updateNode(&son, data, cost);
-					if (contadornos >= 100)
-					{
-						printNo(&son, tree.size(), quant, upper_bound);
-						contadornos = 0;
-					}
 					if (son.lower_bound < upper_bound)
 					{
 						tree.push(son);
@@ -227,6 +228,8 @@ double branch_and_bound(Data *data, double upper_bound, int tipo)
 				node = tree.front();
 				tree.pop_front();
 			}
+			nodeCount++;
+			iterCount++;
 
 			// Cortar os nós com valores piores que o upper_bound
 			if (node.lower_bound > upper_bound)
@@ -237,8 +240,24 @@ double branch_and_bound(Data *data, double upper_bound, int tipo)
 			if (node.feasible)
 			{
 				upper_bound = min(upper_bound, node.lower_bound);
+				if (node.lower_bound < bestInteger)
+				{
+					bestInteger = node.lower_bound;
+				}
 			}
-			else
+
+			// atualiza melhor bound
+			bestBound = min(bestBound, node.lower_bound);
+
+			if (nodeCount % 100 == 0)
+			{
+				long long left = (long long)tree.size();
+				long long treeSz = (long long)tree.size();
+				double gap = (bestInteger > 0.0) ? 100.0 * (bestInteger - bestBound) / bestInteger : 0.0;
+				printNo(nodeCount, left, treeSz, bestInteger, bestBound, iterCount, gap);
+			}
+
+			if (!node.feasible)
 			{
 				for (int i = 0; i < node.smallersubtour.size() - 1; i++)
 				{
@@ -249,17 +268,12 @@ double branch_and_bound(Data *data, double upper_bound, int tipo)
 						node.smallersubtour[i + 1]};
 					son.forbidden_arcs.push_back(forbidden_arc);
 					updateNode(&son, data, cost);
-					/* cout << "Pai: " << endl;
-					printNo(&node);
-					cout << "Filho: " << endl;
-					printNo(&son); */
 					if (son.lower_bound < upper_bound)
 					{
 						tree.push_back(son);
 					}
 				}
 			}
-			// cout << "Tamamho da arvore: " << tree.size() << '\n';
 		}
 	}
 
@@ -277,7 +291,14 @@ int main(int argc, char **argv)
 
 	int tipo = stoi(argv[2]);
 
-	cout << "NoAtual" << " " << "NosRestantes" << " " << "TamanhoArvore" << " " << "LowerBound" << " " << "Viabilidade" << " " << "UpperBound" << endl;
+	std::cout << std::setw(8) << "Node"
+			  << std::setw(8) << "Left"
+			  << std::setw(12) << "Tree"
+			  << std::setw(14) << "BestInt"
+			  << std::setw(14) << "BestBd"
+			  << std::setw(10) << "ItrCnt"
+			  << std::setw(10) << "Gap(%)"
+			  << "\n";
 
 	if (argc == 4)
 	{
