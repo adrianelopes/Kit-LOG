@@ -1,11 +1,13 @@
 {
-    "files.associations": {
-        "new": "cpp",
-        "array": "cpp",
-        "deque": "cpp",
-        "vector": "cpp",
-        "string_view": "cpp",
-        "algorithm": "cpp",
-        "iomanip": "cpp"
-    }
+  "files.associations": {
+    "new": "cpp",
+    "array": "cpp",
+    "deque": "cpp",
+    "vector": "cpp",
+    "string_view": "cpp",
+    "algorithm": "cpp",
+    "iomanip": "cpp",
+    "iostream": "cpp",
+    "ostream": "cpp"
+  }
 }
