@@ -176,7 +176,7 @@ double branch_and_bound(Data *data, double upper_bound, int tipo)
 			}
 
 			// atualiza melhor bound
-			bestBound = min(bestBound, node.lower_bound);
+			bestBound = (!tree.empty() ? tree.top().lower_bound : node.lower_bound);
 
 			if (nodeCount % 100 == 0)
 			{
@@ -184,6 +184,11 @@ double branch_and_bound(Data *data, double upper_bound, int tipo)
 				long long treeSz = (long long)tree.size();
 				double gap = (bestInteger > 0.0) ? 100.0 * (bestInteger - bestBound) / bestInteger : 0.0;
 				printNo(nodeCount, left, treeSz, bestInteger, bestBound, iterCount, gap);
+			}
+
+			if (bestInteger == bestBound)
+			{
+				break;
 			}
 
 			if (!node.feasible)
@@ -244,14 +249,24 @@ double branch_and_bound(Data *data, double upper_bound, int tipo)
 			}
 
 			// atualiza melhor bound
-			bestBound = min(bestBound, node.lower_bound);
-
+			if (!tree.empty())
+			{
+				double bestLb = tree.front().lower_bound;
+				for (const auto &n : tree)
+					bestLb = min(bestLb, n.lower_bound);
+				bestBound = bestLb;
+			}
 			if (nodeCount % 100 == 0)
 			{
 				long long left = (long long)tree.size();
 				long long treeSz = (long long)tree.size();
 				double gap = (bestInteger > 0.0) ? 100.0 * (bestInteger - bestBound) / bestInteger : 0.0;
 				printNo(nodeCount, left, treeSz, bestInteger, bestBound, iterCount, gap);
+			}
+
+			if (bestInteger == bestBound)
+			{
+				break;
 			}
 
 			if (!node.feasible)
