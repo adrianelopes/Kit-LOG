@@ -64,7 +64,7 @@ vector<int> Subtour(hungarian_problem_t &p)
 		/* cout << "Subtour: " << endl;
 		for (int i = 0; i < subtour.size(); i++)
 		{
-		  cout << subtour[i] << " -> ";
+		cout << subtour[i] << " -> ";
 		}
 		cout << endl; */
 		if ((subtour.size() < smtour.size()) || smtour.empty())
@@ -101,11 +101,9 @@ void updateNode(Node *node, Data *data, double **cost)
 	int mode = HUNGARIAN_MODE_MINIMIZE_COST;
 	hungarian_init(&p, cost, data->getDimension(), data->getDimension(),
 				   mode); // Carregando o problema
-	// hungarian_print_costmatrix(&p);
 	node->lower_bound = hungarian_solve(&p);
 	node->smallersubtour = Subtour(p);										  // detectar o conjunto de subtours
 	node->feasible = node->smallersubtour.size() == data->getDimension() + 1; // verificar viabilidade
-	// hungarian_print_assignment(&p);
 
 	hungarian_free(&p);
 }
@@ -145,7 +143,7 @@ double branch_and_bound(Data *data, double upper_bound, int tipo)
 	Node root;
 	updateNode(&root, data, cost);
 	long long nodeCount = 0;			 // Nós processados
-	long long iterCount = 0;			 // Contador de cortes
+	long long iterCount = 0;			 // Contador de cortes/interações
 	double bestInteger = upper_bound;	 // Melhor solução inteira até agora
 	double bestBound = root.lower_bound; // Melhor limite inferior
 
@@ -206,7 +204,6 @@ double branch_and_bound(Data *data, double upper_bound, int tipo)
 					}
 				}
 			}
-			// cout << "Tamamho da arvore: " << tree.size() << '\n';
 		}
 	}
 
