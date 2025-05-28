@@ -4,6 +4,8 @@
 #include "Data.h"
 #include <limits>
 
+using namespace std;
+
 struct Tree
 {
     double cost;
@@ -15,11 +17,11 @@ vector<vector<double>> modifica_Matriz(Data *data)
     int dim = data->getDimension() - 1;
     cout << "DIM: " << dim << endl;
     vector<vector<double>> matriz(dim, vector<double>(dim));
-    for (int i = 1; i < data->getDimension(); i++)
+    for (int i = 2; i <= data->getDimension(); i++)
     {
-        for (int j = 1; j < data->getDimension(); j++)
+        for (int j = 2; j <= data->getDimension(); j++)
         {
-            matriz[i - 1][j - 1] = data->getDistance(i, j);
+            matriz[i - 2][j - 2] = data->getDistance(i, j);
         }
     }
     return matriz;
@@ -33,20 +35,25 @@ Tree Make1_Tree(Data &data)
     Tree tree;
     tree.listAdj = kruskal.getEdges();
 
-    std::cout << "Tamanho listAdj: " << tree.listAdj.size() << std::endl;
+    cout << "Tamanho listAdj: " << tree.listAdj.size() << endl;
 
     double cost;
-    double second = std::numeric_limits<double>::infinity();
-    double first = std::numeric_limits<double>::infinity();
-    int firstJ = -1; // Inicializa índice inválido para detectar erros
-    int secondJ = -1;
+    double second = numeric_limits<double>::infinity();
+    double first = numeric_limits<double>::infinity();
+    int firstJ = 0;
+    int secondJ;
 
-    for (int j = 1; j < data.getDimension() - 1; j++)
+    cout << "firstJ: " << firstJ << ", secondJ: " << secondJ << endl;
+
+    for (int j = 2; j < data.getDimension(); j++)
     {
-        cost = data.getDistance(0, j);
+
+        cost = data.getDistance(1, j);
+        cout << "Cost: " << cost << endl;
 
         if (cost < first)
         {
+
             second = first;
             secondJ = firstJ;
             first = cost;
@@ -59,39 +66,45 @@ Tree Make1_Tree(Data &data)
         }
     }
 
-    std::cout << "firstJ: " << firstJ << ", secondJ: " << secondJ << std::endl;
-
-    int n = data.getDimension();
-    // Redimensionar listAdj para garantir espaço para o vértice 0
-    if ((int)tree.listAdj.size() < n)
-    {
-        tree.listAdj.resize(n);
-    }
+    cout << "firstJ: " << firstJ << ", secondJ: " << secondJ << endl;
 
     tree.cost = inicost + first + second;
     vector<int> J = {firstJ, secondJ};
     tree.listAdj.insert(tree.listAdj.begin(), J);
-    firstJ++;
-    secondJ++;
-
     tree.listAdj[firstJ].push_back(0);
     tree.listAdj[secondJ].push_back(0);
 
     return tree;
 }
 
+Tree Subgradient(Data &data)
+{
+    vector<double> λ;
+    long double ε = 1;
+    long double εmin = 10;
+    double wbest = 0;
+    while ()
+    {
+        Tree tree = Make1_Tree(data);
+        for (int i = 0; i < data.getDimension(); i++)
+        {
+            cout << i << " | ";
+            for (int &a : tree.listAdj[i])
+            {
+                cout << a << " - ";
+            }
+            cout << endl;
+        }
+        double w = tree.cost;
+        if (w > wbest)
+        {
+            wbest = w;
+        }
+    }
+}
+
 int main(int argc, char **argv)
 {
     auto data = Data(argc, argv[1]);
     data.read();
-    cout << "Dimensão: " << data.getDimension() << endl;
-    Tree tree = Make1_Tree(data);
-    for (int i = 0; i < data.getDimension(); i++)
-    {
-        cout << i << " | ";
-        for (int &a : tree.listAdj[i])
-        {
-            cout << a << " - ";
-        }
-    }
 }

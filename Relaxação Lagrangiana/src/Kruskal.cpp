@@ -55,8 +55,8 @@ double Kruskal::MST(int nodes)
 
         if (!isSameSet(p.second.first, p.second.second))
         {
-            edges[p.second.second].push_back(p.second.first);
-            edges[p.second.first].push_back(p.second.second);
+            edges[p.second.second].push_back(p.second.first + 1);
+            edges[p.second.first].push_back(p.second.second + 1);
             cost += (-p.first);
             unionSet(p.second.first, p.second.second);
         }
