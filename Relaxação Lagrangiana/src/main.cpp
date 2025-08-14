@@ -80,7 +80,7 @@ Tree Make1_Tree(Data &data)
 
 Tree Subgradient(Data &data)
 {
-    vector<double> λ, bestλ;
+    vector<double> λ, bestλ; // Há um penalizador para cada vértice, e o penalizador do vértice 0 vale sempre 0.
     vector<vector<int>> s, bests;
     long double ε = 1;
     long double εmin = 10;
@@ -95,15 +95,17 @@ Tree Subgradient(Data &data)
         if (w > wbest)
         {
             wbest = w;
-            bestλ = λ;
+            bestλ = λ; // Fazer função para calcular
             bests = s;
-
             k = 0;
         }
         else
         {
             k = k + 1;
         }
+        // µ ← ε((UB − w)/ ni=1 (2 − degree(i))2 )
+        // λ ← λ + µ(2 − degree(i)) Fazer função para calcular cada lambda
+        // Obtém-se uma nova matriz de distâncias, e consequentemente uma 1-árvore diferente
     }
 }
 
