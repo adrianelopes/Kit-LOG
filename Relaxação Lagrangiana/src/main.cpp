@@ -78,30 +78,26 @@ Tree Make1_Tree(Data &data)
     return tree;
 }
 
-/* Tree Subgradient(Data &data)
+Tree Subgradient(Data &data)
 {
     vector<double> λ, bestλ;
+    vector<vector<int>> s, bests;
     long double ε = 1;
     long double εmin = 10;
     double wbest = 0;
+    int degree = 0; // Fazer função para calcular
     int k = 0;
-    while ()
+    while (ε < εmin && degree != 2)
     {
         Tree tree = Make1_Tree(data);
-        for (int i = 0; i < data.getDimension(); i++)
-        {
-            cout << i << " | ";
-            for (int &a : tree.listAdj[i])
-            {
-                cout << a << " - ";
-            }
-            cout << endl;
-        }
+        s = tree.listAdj;
         double w = tree.cost;
         if (w > wbest)
         {
             wbest = w;
             bestλ = λ;
+            bests = s;
+
             k = 0;
         }
         else
@@ -109,7 +105,7 @@ Tree Make1_Tree(Data &data)
             k = k + 1;
         }
     }
-} */
+}
 
 int main(int argc, char **argv)
 {
