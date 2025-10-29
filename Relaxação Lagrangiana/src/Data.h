@@ -14,6 +14,7 @@ class Data
 public:
 	Data(int, char *);
 	~Data();
+	double **distMatrix;
 
 	void read();
 	void printMatrixDist();
@@ -32,7 +33,6 @@ private:
 
 	int dimension;
 
-	double **distMatrix;
 	double *xCoord, *yCoord;
 
 	// Computing Distances
