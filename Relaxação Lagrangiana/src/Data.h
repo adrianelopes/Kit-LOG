@@ -14,7 +14,6 @@ class Data
 public:
 	Data(int, char *);
 	~Data();
-	double **distMatrix;
 
 	void read();
 	void printMatrixDist();
@@ -30,6 +29,7 @@ public:
 private:
 	string instaceName;
 	int nbOfPar;
+	double **distMatrix;
 
 	int dimension;
 
