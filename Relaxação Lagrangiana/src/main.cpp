@@ -3,6 +3,7 @@
 #include "Kruskal.h"
 #include "Data.h"
 #include <limits>
+#include <iomanip>
 
 using namespace std;
 
@@ -148,7 +149,7 @@ Tree Subgradient(Data &data, double UB)
 
     // Variáveis
     vector<double> lambda(data.getDimension()), bestlambda(data.getDimension());
-    long double eps = 1, epsmin = 0.00001;
+    long double eps = 1, epsmin = 0.0001;
     double wbest = 0, w = 0, mi = 0, sum = 0;
     int k = 0, kmax = 30, degree = 0;
     bool condition = true;
@@ -165,23 +166,29 @@ Tree Subgradient(Data &data, double UB)
     Original_tree = Make1_Tree_Original(data);
 
     tree = Original_tree;
-    // eps > epsmin && condition
+    const double EPS = 0.0000000001;
+
+    // count != 125
     while (eps > epsmin && condition)
     {
-        /*        cout << "----------------------------------------------" << endl;
-               cout << "Dimensão: " << data.getDimension() << endl;
-               for (int l = 0; l < data.getDimension(); l++)
-               {
-                   cout << "Lambda: " << l << "  valor: " << lambda[l] << endl;
-               } */
+        /*         cout << "----------------------------------------------" << endl;
+                cout << "Dimensão: " << data.getDimension() << endl;
+                for (int l = 0; l < data.getDimension(); l++)
+                {
+                    cout << "Lambda: " << l << "  valor: " << lambda[l] << endl;
+                } */
 
         // Altera a matriz da árvore
         condition = false;
         tree = Make1_Tree(data, lambda);
 
         w = tree.cost;
-        if (w > wbest)
+
+        if (w > wbest + EPS)
         {
+
+            cout << fixed << setprecision(10);
+            cout << "Entrei com meu w: " << w << " \nmaior que meu wbest: " << wbest << endl;
             wbest = w;
             bestlambda = lambda;
             best_tree = tree;
@@ -189,7 +196,7 @@ Tree Subgradient(Data &data, double UB)
         }
         else
         {
-            cout << "não achei" << endl;
+            cout << "Não achei melhor que: " << wbest << endl;
             k = k + 1;
             if (k >= kmax)
             {
@@ -204,7 +211,6 @@ Tree Subgradient(Data &data, double UB)
         {
             // Erro no cálculo do grau
             degree = tree.listAdj[i].size();
-            cout << "Degree: 3" << tree.listAdj[3].size() << endl;
             if (degree != 2)
             {
                 condition = true;
@@ -220,7 +226,6 @@ Tree Subgradient(Data &data, double UB)
             degree = tree.listAdj[i].size();
             lambda[i] = lambda[i] + (mi * (2 - degree));
         }
-
         count++;
     }
 
