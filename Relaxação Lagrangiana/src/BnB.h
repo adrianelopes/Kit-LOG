@@ -1,8 +1,7 @@
 #ifndef BNB_H
 #define BNB_H
 
-#include "Data.h"
-#include "relaxacao_lagrangiana.h"
+#include "relaxacao_funcoes.h"
 #include <iostream>
 #include <vector>
 #include <set>
@@ -16,9 +15,11 @@ using namespace std;
 struct Node
 {
     vector<pair<int, int>> forbidden_arcs;
-    vector<int> smallersubtour;
+    vector<int> highestDegreeAdj;
+    int highestDegreeNode;
     double lower_bound; // custo total da solucao do algoritmo hungaro
     bool feasible;      // indica se a solucao do AP_TSP é viavel
+    vector<double> lambda;
 
     bool operator<(const Node &next) const
     {
@@ -26,8 +27,17 @@ struct Node
     }
 };
 
-void updateNode(Node *node, Data *data, double **cost);
+struct AuxNode
+{
+    vector<int> degreeAdj;
+    int v;
+    double cost;
+    vector<double> lambda;
+};
+
+AuxNode verificaTour(Data *data, vector<double> lambda);
 double branch_and_bound(Data *data, double upper_bound, int tipo);
 void printNo(long long nodeCount, long long left, long long treeSz, double bestInteger, double bestBound, long long iterCount, double gap);
+void updateNode(Node *node, Data *data, double **cost, vector<double> lambda);
 
 #endif

@@ -13,12 +13,13 @@ struct Tree
 {
     double cost;
     vector<vector<int>> listAdj;
+    vector<double> lambda;
 };
 
-vector<vector<double>> modifica_Matriz(Data &data);
-Tree Make1_Tree_Original(Data &data);
-vector<vector<double>> altera_matriz(Data &data, vector<double> lambda, vector<vector<double>> matriz);
-Tree Make1_Tree(Data &data, vector<double> lambda);
-Tree Subgradient(Data &data, double UB);
+vector<vector<double>> modifica_Matriz(Data *data);
+// Tree Make1_Tree_Original(Data &data);
+vector<vector<double>> altera_matriz(Data *data, vector<double> lambda, vector<vector<double>> matriz);
+Tree Make1_Tree(Data *data, vector<double> lambda);
+Tree Subgradient(Data *data, double UB, vector<double> lambda);
 
 #endif

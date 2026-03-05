@@ -1,4 +1,3 @@
-#include "Data.h"
 #include "BnB.h"
 #include <iostream>
 #include <vector>
@@ -14,9 +13,53 @@ Roteiro:
 1.Uma função para verificar se a melhor árvore é um tour;
 2.Uma função para proibir os arcos associados ao vértice de maior grau
 3.A função do branch and bound
+OBS: Colocar o vetor de penalizadores na estrutura
 */
 
-void updateNode(Node *node, Data *data, double **cost)
+// Criar função que:
+// Usa o dual lagrangiano
+// Verifica se a melhor árvore obtida é um tour
+// Se não for: encontra o vértice com maior grau, proibe os arcos associados a esse vértice nos nós filhos
+
+void printNo(long long nodeCount, long long left, long long treeSz, double bestInteger, double bestBound, long long iterCount, double gap)
+{
+
+    cout << setw(8) << nodeCount
+         << setw(8) << left
+         << setw(12) << treeSz
+         << setw(14) << fixed << setprecision(2) << bestInteger
+         << setw(14) << fixed << setprecision(2) << bestBound
+         << setw(10) << iterCount
+         << setw(10) << fixed << setprecision(2) << gap
+         << "\n";
+}
+
+AuxNode verificaTour(Data *data, vector<double> lambda)
+{
+    AuxNode aux;
+    Tree tree = Subgradient(data, 148, lambda);
+    aux.cost = tree.cost;
+    aux.lambda = tree.lambda;
+    int maiorgrau = 2;
+    int maiorno = 0;
+    for (int i = 0; i < data->getDimension() - 1; i++)
+    {
+        if (tree.listAdj[i].size() == 2)
+        {
+        }
+        else if (tree.listAdj[i].size() > maiorgrau)
+        {
+            maiorgrau = tree.listAdj[i].size();
+            maiorno = i;
+        }
+    }
+    aux.degreeAdj = tree.listAdj[maiorno];
+    aux.v = maiorno;
+
+    return aux;
+}
+
+void updateNode(Node *node, Data *data, double **cost, vector<double> lambda)
 {
     for (int i = 0; i < data->getDimension(); i++)
     {
@@ -38,32 +81,18 @@ void updateNode(Node *node, Data *data, double **cost)
     {
         cost[aresta.first][aresta.second] = 9999999;
     }
-    /* hungarian_problem_t p;
-    int mode = HUNGARIAN_MODE_MINIMIZE_COST;
-    hungarian_init(&p, cost, data->getDimension(), data->getDimension(),
-                   mode); // Carregando o problema
-    node->lower_bound = hungarian_solve(&p);
-    node->smallersubtour = Subtour(p);                                        // detectar o conjunto de subtours
-    node->feasible = node->smallersubtour.size() == data->getDimension() + 1; // verificar viabilidade
 
-    hungarian_free(&p); */
-}
-
-void printNo(long long nodeCount, long long left, long long treeSz, double bestInteger, double bestBound, long long iterCount, double gap)
-{
-
-    cout << setw(8) << nodeCount
-         << setw(8) << left
-         << setw(12) << treeSz
-         << setw(14) << fixed << setprecision(2) << bestInteger
-         << setw(14) << fixed << setprecision(2) << bestBound
-         << setw(10) << iterCount
-         << setw(10) << fixed << setprecision(2) << gap
-         << "\n";
+    AuxNode aux = verificaTour(data, lambda);
+    node->lambda = aux.lambda;
+    node->lower_bound = aux.cost;
+    node->highestDegreeAdj = aux.degreeAdj;
+    node->highestDegreeNode = aux.v;
+    node->feasible = node->highestDegreeAdj.size() == 2; // verificar viabilidade
 }
 
 double branch_and_bound(Data *data, double upper_bound, int tipo)
 {
+    vector<double> lambda(data->getDimension());
     double **cost = new double *[data->getDimension()];
     for (int i = 0; i < data->getDimension(); i++)
     {
@@ -82,7 +111,11 @@ double branch_and_bound(Data *data, double upper_bound, int tipo)
     }
 
     Node root;
-    updateNode(&root, data, cost);
+    for (int i = 0; i < data->getDimension(); i++)
+    {
+        lambda[i] = 0;
+    }
+    updateNode(&root, data, cost, lambda);
     long long nodeCount = 0;             // Nós processados
     long long iterCount = 0;             // Contador de cortes/interações
     double bestInteger = upper_bound;    // Melhor solução inteira até agora
@@ -139,16 +172,16 @@ double branch_and_bound(Data *data, double upper_bound, int tipo)
 
             if (!node.feasible)
             {
-                for (int i = 0; i < node.smallersubtour.size() - 1; i++)
+                for (int i = 0; i < node.highestDegreeAdj.size() - 1; i++)
                 {
                     Node son;
 
                     son.forbidden_arcs = node.forbidden_arcs;
                     pair<int, int> forbidden_arc = {
-                        node.smallersubtour[i],
-                        node.smallersubtour[i + 1]};
+                        node.highestDegreeAdj[node.highestDegreeNode],
+                        node.highestDegreeAdj[i]};
                     son.forbidden_arcs.push_back(forbidden_arc);
-                    updateNode(&son, data, cost);
+                    updateNode(&son, data, cost, node.lambda);
                     if (son.lower_bound < upper_bound)
                     {
                         tree.push(son);
@@ -221,15 +254,15 @@ double branch_and_bound(Data *data, double upper_bound, int tipo)
 
             if (!node.feasible)
             {
-                for (int i = 0; i < node.smallersubtour.size() - 1; i++)
+                for (int i = 0; i < node.highestDegreeAdj.size() - 1; i++)
                 {
                     Node son;
                     son.forbidden_arcs = node.forbidden_arcs;
                     pair<int, int> forbidden_arc = {
-                        node.smallersubtour[i],
-                        node.smallersubtour[i + 1]};
+                        node.highestDegreeAdj[node.highestDegreeNode],
+                        node.highestDegreeAdj[i]};
                     son.forbidden_arcs.push_back(forbidden_arc);
-                    updateNode(&son, data, cost);
+                    updateNode(&son, data, cost, node.lambda);
                     if (son.lower_bound < upper_bound)
                     {
                         tree.push_back(son);
