@@ -32,7 +32,7 @@ int main(int argc, char **argv)
   }
   else
   {
-    cout << branch_and_bound(data, 99999999, tipo) << endl;
+    cout << branch_and_bound(data, 9999999.9, tipo) << endl;
   }
 
   delete data;

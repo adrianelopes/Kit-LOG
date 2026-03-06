@@ -7,10 +7,13 @@
 
 using namespace std;
 
-vector<vector<double>> modifica_Matriz(Data *data)
+vector<vector<double>> modifica_Matriz(Data *data, const vector<pair<int, int>> &forbidden_arcs)
 {
     int dim = data->getDimension() - 1;
+
     vector<vector<double>> matriz(dim, vector<double>(dim));
+
+    // cria matriz sem o nó 0
     for (int i = 2; i <= data->getDimension(); i++)
     {
         for (int j = 2; j <= data->getDimension(); j++)
@@ -19,82 +22,69 @@ vector<vector<double>> modifica_Matriz(Data *data)
         }
     }
 
-    return matriz;
-}
+    double INF = numeric_limits<double>::infinity();
 
-/* ree Make1_Tree_Original(Data &data)
-{
-
-    vector<vector<double>> matriz = modifica_Matriz(data);
-    auto kruskal = Kruskal(matriz);
-    double inicost = kruskal.MST(data.getDimension() - 1);
-    Tree tree;
-    tree.listAdj = kruskal.getEdges();
-
-    double cost;
-    double second = numeric_limits<double>::infinity();
-    double first = numeric_limits<double>::infinity();
-    int firstJ = 0;
-    int secondJ = 0;
-
-    // Escolher os dois vértices mais próximos do vértice 0
-    for (int j = 2; j < data.getDimension(); j++)
+    // aplica arcos proibidos
+    for (auto &arc : forbidden_arcs)
     {
+        int u = arc.first;
+        int v = arc.second;
 
-        cost = data.getDistance(1, j);
-
-        if (cost < first)
+        if (u == 1 || v == 1)
         {
-
-            second = first;
-            secondJ = firstJ;
-            first = cost;
-            firstJ = j - 1;
+            continue;
         }
-        else if (cost < second)
+
+        int i = u - 1;
+        int j = v - 1;
+
+        if (i >= 0 && i < dim && j >= 0 && j < dim)
         {
-            second = cost;
-            secondJ = j - 1;
+            matriz[i][j] = INF;
+            matriz[j][i] = INF;
         }
     }
 
-    tree.cost = inicost + first + second;
-    vector<int> J = {firstJ, secondJ};
-    tree.listAdj.insert(tree.listAdj.begin(), J);
-    tree.listAdj[firstJ].push_back(0);
-    tree.listAdj[secondJ].push_back(0);
-
-    return tree;
+    return matriz;
 }
- */
+
 // Alterar a matriz de acordo com a solução
-vector<vector<double>> altera_matriz(Data *data, vector<double> lambda, vector<vector<double>> matriz)
+void altera_matriz(Data *data, double **cost, vector<double> &lambda, vector<vector<double>> &matriz)
 {
 
     for (int i = 1; i < data->getDimension(); i++)
     {
         for (int j = 1; j < data->getDimension(); j++)
         {
-            matriz[i - 1][j - 1] = data->getDistance(i + 1, j + 1) - lambda[i] - lambda[j];
+            matriz[i - 1][j - 1] = matriz[i - 1][j - 1] - lambda[i] - lambda[j];
         }
     }
-
-    return matriz;
 }
 
 // Criar a árvore de acordo com a matriz alterada
-Tree Make1_Tree(Data *data, vector<double> lambda)
+Tree Make1_Tree(Data *data, double **cost, vector<double> &lambda, const vector<pair<int, int>> &forbidden_arcs)
 {
 
-    vector<vector<double>> matriz = modifica_Matriz(data);
-    matriz = altera_matriz(data, lambda, matriz);
+    // cout << "antes do modifica matriz" << endl;
+    vector<vector<double>> matriz = modifica_Matriz(data, forbidden_arcs);
+    // cout << "antes do altera matriz" << endl;
+
+    altera_matriz(data, cost, lambda, matriz);
+    // cout << "depois do altera matriz" << endl;
 
     auto kruskal = Kruskal(matriz);
     double inicost = kruskal.MST(data->getDimension() - 1);
     Tree tree;
     tree.listAdj = kruskal.getEdges();
 
-    double cost;
+    /*     cout << "Graus da 1-tree:\n";
+
+        for (int i = 0; i < tree.listAdj.size(); i++)
+        {
+            cout << i << " -> " << tree.listAdj[i].size() << endl;
+        } */
+
+    double custo;
     double second = numeric_limits<double>::infinity();
     double first = numeric_limits<double>::infinity();
     int firstJ = 0;
@@ -105,30 +95,55 @@ Tree Make1_Tree(Data *data, vector<double> lambda)
     // Matriz das distâncias do vétice 0 para os outros vértices
     for (int i = 0; i < data->getDimension(); i++)
     {
-        matriz2[i] = data->getDistance(1, i + 1) - lambda[i];
+        matriz2[i] = cost[0][i] - lambda[i];
     }
 
     for (int j = 1; j < data->getDimension(); j++)
     {
+        bool forbidden = false;
 
-        cost = matriz2[j];
+        for (auto &arc : forbidden_arcs)
+        {
 
-        if (cost < first)
+            if ((arc.first == 0 && arc.second == j) ||
+                (arc.second == 0 && arc.first == j) ||
+                (arc.first == 1 && arc.second == j + 1) ||
+                (arc.second == 1 && arc.first == j + 1))
+            {
+                forbidden = true;
+                break;
+            }
+        }
+
+        if (forbidden)
+        {
+            continue;
+        }
+
+        custo = matriz2[j];
+
+        if (custo < first)
         {
 
             second = first;
             secondJ = firstJ;
-            first = cost;
+            first = custo;
             firstJ = j;
         }
-        else if (cost < second)
+        else if (custo < second)
         {
-            second = cost;
+            second = custo;
             secondJ = j;
         }
     }
 
-    tree.cost = inicost + first + second;
+    double sum_lambda = 0.0;
+    for (int i = 1; i < data->getDimension(); ++i)
+    {
+        sum_lambda += lambda[i];
+    }
+
+    tree.cost = inicost + first + second + 2.0 * sum_lambda;
     vector<int> J = {firstJ, secondJ};
     tree.listAdj.insert(tree.listAdj.begin(), J);
     tree.listAdj[firstJ].push_back(0);
@@ -137,7 +152,7 @@ Tree Make1_Tree(Data *data, vector<double> lambda)
     return tree;
 }
 
-Tree Subgradient(Data *data, double UB, vector<double> lambda)
+Tree Subgradient(Data *data, double **cost, double UB, vector<double> &lambda, const vector<pair<int, int>> &forbidden_arcs)
 {
 
     // Variáveis
@@ -149,24 +164,16 @@ Tree Subgradient(Data *data, double UB, vector<double> lambda)
     Tree best_tree, tree, Original_tree;
     int count = 0;
 
-    const double EPS = 0.0000000001;
-
     while (eps > epsmin && condition)
     {
-        /*         cout << "----------------------------------------------" << endl;
-                cout << "Dimensão: " << data.getDimension() << endl;
-                for (int l = 0; l < data.getDimension(); l++)
-                {
-                    cout << "Lambda: " << l << "  valor: " << lambda[l] << endl;
-                } */
 
-        // Altera a matriz da árvore
         condition = false;
-        tree = Make1_Tree(data, lambda);
+        tree = Make1_Tree(data, cost, lambda, forbidden_arcs);
+        tree.lambda = lambda;
 
         w = tree.cost;
 
-        if (w > wbest + EPS)
+        if (w > wbest)
         {
 
             wbest = w;
@@ -186,6 +193,7 @@ Tree Subgradient(Data *data, double UB, vector<double> lambda)
             }
         }
 
+        sum = 0;
         // Verificar se a solução atual obedece a restrição de grau
         for (int i = 1; i < data->getDimension(); i++)
         {
@@ -197,6 +205,9 @@ Tree Subgradient(Data *data, double UB, vector<double> lambda)
             }
             sum = sum + ((2 - degree) * (2 - degree));
         }
+
+        if (sum == 0)
+            break;
 
         mi = eps * ((UB - w) / sum);
 

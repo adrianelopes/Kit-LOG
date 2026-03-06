@@ -16,10 +16,10 @@ struct Tree
     vector<double> lambda;
 };
 
-vector<vector<double>> modifica_Matriz(Data *data);
+vector<vector<double>> modifica_Matriz(Data *data, const vector<pair<int, int>> &forbidden_arcs);
 // Tree Make1_Tree_Original(Data &data);
-vector<vector<double>> altera_matriz(Data *data, vector<double> lambda, vector<vector<double>> matriz);
-Tree Make1_Tree(Data *data, vector<double> lambda);
-Tree Subgradient(Data *data, double UB, vector<double> lambda);
+void altera_matriz(Data *data, double **cost, vector<double> &lambda, vector<vector<double>> &matriz);
+Tree Make1_Tree(Data *data, double **cost, vector<double> &lambda, const vector<pair<int, int>> &forbidden_arcs);
+Tree Subgradient(Data *data, double **cost, double UB, vector<double> &lambda, const vector<pair<int, int>> &forbidden_arcs);
 
 #endif

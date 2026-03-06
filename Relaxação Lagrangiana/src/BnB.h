@@ -32,12 +32,14 @@ struct AuxNode
     vector<int> degreeAdj;
     int v;
     double cost;
+    bool tour;
     vector<double> lambda;
 };
 
-AuxNode verificaTour(Data *data, vector<double> lambda);
+AuxNode verificaTour(Data *data, vector<double> &lambda, double upper_bound, double **cost, const vector<pair<int, int>> &forbidden_arcs);
 double branch_and_bound(Data *data, double upper_bound, int tipo);
-void printNo(long long nodeCount, long long left, long long treeSz, double bestInteger, double bestBound, long long iterCount, double gap);
-void updateNode(Node *node, Data *data, double **cost, vector<double> lambda);
+void printNo(long long nodeCount, long long left, long long treeSz, double bestInteger, double bestBound, long long iterCount, double gap, vector<pair<int, int>> &forbidden_arcs);
+void updateNode(Node *node, Data *data, double &upper_bound, double **cost, vector<double> &lambda);
+bool isTour(const vector<vector<int>> &adj);
 
 #endif
