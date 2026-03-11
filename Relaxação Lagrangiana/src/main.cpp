@@ -6,10 +6,13 @@
 #include <deque>
 #include <algorithm>
 #include <queue>
+#include <ctime>
+#include <cstdlib>
 #include <chrono>
 #include <iomanip>
 
 using namespace std;
+using namespace chrono;
 
 int main(int argc, char **argv)
 {
@@ -29,17 +32,18 @@ int main(int argc, char **argv)
               << "\n"; */
 
   double UB = grasp(*data);
-  cout << "UB: " << UB << endl;
-  cout << branch_and_bound(data, UB, tipo) << endl;
-  /*   if (argc == 3)
-    {
-      cout << branch_and_bound(data, stod(argv[3]) + 1, tipo) << endl;
-    }
-    else
-    {
-      cout << branch_and_bound(data, 9999999.9, tipo) << endl;
-    } */
-  auto fim = std::chrono::high_resolution_clock::now();
+  auto inicio = high_resolution_clock::now();
+  double BnB = 0;
+
+  for (int y = 0; y < 10; y++)
+  {
+    BnB += branch_and_bound(data, UB, tipo);
+  }
+  auto fim = high_resolution_clock::now();
+
+  auto tempo = duration_cast<microseconds>(fim - inicio);
+
+  cout << (BnB / 10) << " " << (tempo.count() / 1e7) << endl;
 
   delete data;
 

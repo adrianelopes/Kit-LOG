@@ -218,7 +218,7 @@ double branch_and_bound(Data *data, double upper_bound, int tipo)
                 long long left = (long long)tree.size();
                 long long treeSz = (long long)tree.size();
                 double gap = (bestInteger > 0.0) ? 100.0 * (bestInteger - bestBound) / bestInteger : 0.0;
-                printNo(nodeCount, left, treeSz, bestInteger, bestBound, iterCount, gap, node.forbidden_arcs);
+                // printNo(nodeCount, left, treeSz, bestInteger, bestBound, iterCount, gap, node.forbidden_arcs);
             }
 
             if (bestInteger == bestBound)
@@ -226,7 +226,7 @@ double branch_and_bound(Data *data, double upper_bound, int tipo)
                 long long left = (long long)tree.size();
                 long long treeSz = (long long)tree.size();
                 double gap = (bestInteger > 0.0) ? 100.0 * (bestInteger - bestBound) / bestInteger : 0.0;
-                printNo(nodeCount, left, treeSz, bestInteger, bestBound, iterCount, gap, node.forbidden_arcs);
+                // printNo(nodeCount, left, treeSz, bestInteger, bestBound, iterCount, gap, node.forbidden_arcs);
 
                 break;
             }
@@ -304,7 +304,7 @@ double branch_and_bound(Data *data, double upper_bound, int tipo)
                 long long left = (long long)tree.size();
                 long long treeSz = (long long)tree.size();
                 double gap = (bestInteger > 0.0) ? 100.0 * (bestInteger - bestBound) / bestInteger : 0.0;
-                printNo(nodeCount, left, treeSz, bestInteger, bestBound, iterCount, gap, node.forbidden_arcs);
+                // printNo(nodeCount, left, treeSz, bestInteger, bestBound, iterCount, gap, node.forbidden_arcs);
             }
 
             if (bestInteger == bestBound)
@@ -312,7 +312,7 @@ double branch_and_bound(Data *data, double upper_bound, int tipo)
                 long long left = (long long)tree.size();
                 long long treeSz = (long long)tree.size();
                 double gap = (bestInteger > 0.0) ? 100.0 * (bestInteger - bestBound) / bestInteger : 0.0;
-                printNo(nodeCount, left, treeSz, bestInteger, bestBound, iterCount, gap, node.forbidden_arcs);
+                // printNo(nodeCount, left, treeSz, bestInteger, bestBound, iterCount, gap, node.forbidden_arcs);
                 break;
             }
 

@@ -3,16 +3,16 @@ make
 k=1
 
 for instance in instances/*; do
-	echo $instance >> ./DFS.txt
+	echo $instance >> ./BFS.txt
 	
-	echo "DFS"
+	echo "BFS"
 	echo "Processando $instance"
 	echo "Instance $k of 15"
 	
-	./tsp ${instance} 1 >> ./DFS.txt
+	./tsp ${instance} 2 >> ./BFS.txt
 	
 	k=$(($k+1))
 done
 
-echo "-" >> ./DFS.txt
+echo "-" >> ./BFS.txt
 
