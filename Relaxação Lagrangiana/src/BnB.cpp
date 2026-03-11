@@ -213,7 +213,7 @@ double branch_and_bound(Data *data, double upper_bound, int tipo)
             // atualiza melhor bound
             bestBound = (!tree.empty() ? tree.top().lower_bound : node.lower_bound);
 
-            if (nodeCount % 2 == 0)
+            if (nodeCount % 100 == 0)
             {
                 long long left = (long long)tree.size();
                 long long treeSz = (long long)tree.size();
@@ -263,11 +263,13 @@ double branch_and_bound(Data *data, double upper_bound, int tipo)
         {
             if (tipo == 1)
             {
+                // DFS
                 node = tree.back();
                 tree.pop_back();
             }
             else
             {
+                // BFS
                 node = tree.front();
                 tree.pop_front();
             }
