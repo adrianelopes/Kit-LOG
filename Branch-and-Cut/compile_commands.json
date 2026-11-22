@@ -1,0 +1,178 @@
+[
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-m64",
+      "-O3",
+      "-fPIC",
+      "-fexceptions",
+      "-DNDEBUG",
+      "-DIL_STD",
+      "-std=c++0x",
+      "-I/opt/ibm/ILOG/CPLEX_Studio2212/cplex/include",
+      "-I/opt/ibm/ILOG/CPLEX_Studio2212/concert/include",
+      "-I./include",
+      "-c",
+      "-o",
+      "obj/auxFunctions.o",
+      "src/auxFunctions.cpp"
+    ],
+    "directory": "/home/adriane/Documentos/Projeto Kit Log/kit-opt/Branch-and-Cut",
+    "file": "/home/adriane/Documentos/Projeto Kit Log/kit-opt/Branch-and-Cut/src/auxFunctions.cpp",
+    "output": "/home/adriane/Documentos/Projeto Kit Log/kit-opt/Branch-and-Cut/obj/auxFunctions.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-m64",
+      "-O3",
+      "-fPIC",
+      "-fexceptions",
+      "-DNDEBUG",
+      "-DIL_STD",
+      "-std=c++0x",
+      "-I/opt/ibm/ILOG/CPLEX_Studio2212/cplex/include",
+      "-I/opt/ibm/ILOG/CPLEX_Studio2212/concert/include",
+      "-I./include",
+      "-c",
+      "-o",
+      "obj/dataFunction.o",
+      "src/dataFunction.cpp"
+    ],
+    "directory": "/home/adriane/Documentos/Projeto Kit Log/kit-opt/Branch-and-Cut",
+    "file": "/home/adriane/Documentos/Projeto Kit Log/kit-opt/Branch-and-Cut/src/dataFunction.cpp",
+    "output": "/home/adriane/Documentos/Projeto Kit Log/kit-opt/Branch-and-Cut/obj/dataFunction.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-m64",
+      "-O3",
+      "-fPIC",
+      "-fexceptions",
+      "-DNDEBUG",
+      "-DIL_STD",
+      "-std=c++0x",
+      "-I/opt/ibm/ILOG/CPLEX_Studio2212/cplex/include",
+      "-I/opt/ibm/ILOG/CPLEX_Studio2212/concert/include",
+      "-I./include",
+      "-c",
+      "-o",
+      "obj/main.o",
+      "src/main.cpp"
+    ],
+    "directory": "/home/adriane/Documentos/Projeto Kit Log/kit-opt/Branch-and-Cut",
+    "file": "/home/adriane/Documentos/Projeto Kit Log/kit-opt/Branch-and-Cut/src/main.cpp",
+    "output": "/home/adriane/Documentos/Projeto Kit Log/kit-opt/Branch-and-Cut/obj/main.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-m64",
+      "-O3",
+      "-fPIC",
+      "-fexceptions",
+      "-DNDEBUG",
+      "-DIL_STD",
+      "-std=c++0x",
+      "-I/opt/ibm/ILOG/CPLEX_Studio2212/cplex/include",
+      "-I/opt/ibm/ILOG/CPLEX_Studio2212/concert/include",
+      "-I./include",
+      "-c",
+      "-o",
+      "obj/MyBranchCallback.o",
+      "src/MyBranchCallback.cpp"
+    ],
+    "directory": "/home/adriane/Documentos/Projeto Kit Log/kit-opt/Branch-and-Cut",
+    "file": "/home/adriane/Documentos/Projeto Kit Log/kit-opt/Branch-and-Cut/src/MyBranchCallback.cpp",
+    "output": "/home/adriane/Documentos/Projeto Kit Log/kit-opt/Branch-and-Cut/obj/MyBranchCallback.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-m64",
+      "-O3",
+      "-fPIC",
+      "-fexceptions",
+      "-DNDEBUG",
+      "-DIL_STD",
+      "-std=c++0x",
+      "-I/opt/ibm/ILOG/CPLEX_Studio2212/cplex/include",
+      "-I/opt/ibm/ILOG/CPLEX_Studio2212/concert/include",
+      "-I./include",
+      "-c",
+      "-o",
+      "obj/MyCutCallback.o",
+      "src/MyCutCallback.cpp"
+    ],
+    "directory": "/home/adriane/Documentos/Projeto Kit Log/kit-opt/Branch-and-Cut",
+    "file": "/home/adriane/Documentos/Projeto Kit Log/kit-opt/Branch-and-Cut/src/MyCutCallback.cpp",
+    "output": "/home/adriane/Documentos/Projeto Kit Log/kit-opt/Branch-and-Cut/obj/MyCutCallback.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-m64",
+      "-O3",
+      "-fPIC",
+      "-fexceptions",
+      "-DNDEBUG",
+      "-DIL_STD",
+      "-std=c++0x",
+      "-I/opt/ibm/ILOG/CPLEX_Studio2212/cplex/include",
+      "-I/opt/ibm/ILOG/CPLEX_Studio2212/concert/include",
+      "-I./include",
+      "-c",
+      "-o",
+      "obj/MyLazyCallback.o",
+      "src/MyLazyCallback.cpp"
+    ],
+    "directory": "/home/adriane/Documentos/Projeto Kit Log/kit-opt/Branch-and-Cut",
+    "file": "/home/adriane/Documentos/Projeto Kit Log/kit-opt/Branch-and-Cut/src/MyLazyCallback.cpp",
+    "output": "/home/adriane/Documentos/Projeto Kit Log/kit-opt/Branch-and-Cut/obj/MyLazyCallback.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-m64",
+      "-O3",
+      "-fPIC",
+      "-fexceptions",
+      "-DNDEBUG",
+      "-DIL_STD",
+      "-std=c++0x",
+      "-I/opt/ibm/ILOG/CPLEX_Studio2212/cplex/include",
+      "-I/opt/ibm/ILOG/CPLEX_Studio2212/concert/include",
+      "-I./include",
+      "-c",
+      "-o",
+      "obj/NodeInfo.o",
+      "src/NodeInfo.cpp"
+    ],
+    "directory": "/home/adriane/Documentos/Projeto Kit Log/kit-opt/Branch-and-Cut",
+    "file": "/home/adriane/Documentos/Projeto Kit Log/kit-opt/Branch-and-Cut/src/NodeInfo.cpp",
+    "output": "/home/adriane/Documentos/Projeto Kit Log/kit-opt/Branch-and-Cut/obj/NodeInfo.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-m64",
+      "-O3",
+      "-fPIC",
+      "-fexceptions",
+      "-DNDEBUG",
+      "-DIL_STD",
+      "-std=c++0x",
+      "-I/opt/ibm/ILOG/CPLEX_Studio2212/cplex/include",
+      "-I/opt/ibm/ILOG/CPLEX_Studio2212/concert/include",
+      "-I./include",
+      "-c",
+      "-o",
+      "obj/separation.o",
+      "src/separation.cpp"
+    ],
+    "directory": "/home/adriane/Documentos/Projeto Kit Log/kit-opt/Branch-and-Cut",
+    "file": "/home/adriane/Documentos/Projeto Kit Log/kit-opt/Branch-and-Cut/src/separation.cpp",
+    "output": "/home/adriane/Documentos/Projeto Kit Log/kit-opt/Branch-and-Cut/obj/separation.o"
+  }
+]
